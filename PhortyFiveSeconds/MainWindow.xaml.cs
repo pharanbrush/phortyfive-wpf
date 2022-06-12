@@ -99,13 +99,14 @@ public partial class MainWindow : Window
 
 	void UserOpenFiles ()
 	{
-		var filePaths = FileUtilities.OpenFiles();
+		var filePaths = FileUtilities.OpenImages();
 		LoadFilesAndStartNewSet(filePaths);
 	}
 
 	void LoadFilesAndStartNewSet (IEnumerable<string> filePaths)
 	{
-		FileList.Load(filePaths);
+		var imagePaths = FileUtilities.EnumerateImages(filePaths);
+		FileList.Load(imagePaths);
 		Timer.Restart();
 
 		if (FileList.Count > 0)
