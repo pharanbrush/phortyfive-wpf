@@ -1,0 +1,158 @@
+﻿<Window x:Class="PhortyFiveSeconds.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PhortyFiveSeconds"
+        mc:Ignorable="d"
+        Title="Phorty-Five Seconds"
+	  Height="800" Width="800"
+	  MinHeight="100" MinWidth="400">
+	<Window.Resources>
+		<SolidColorBrush x:Key="ImageFileNameLabelColor" Color="#4C373737"/>
+	</Window.Resources>
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="*" />
+			<RowDefinition Height="Auto" />
+		</Grid.RowDefinitions>
+
+		<Label Foreground="{DynamicResource ImageFileNameLabelColor}" Grid.Row="0" Name="ImageFileNameLabel" Content="." HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="10" >
+			<Label.ToolTip>
+				<ToolTip>Double-click to copy</ToolTip>
+			</Label.ToolTip>
+		</Label>
+
+		<Label Grid.Row="0" Name="ToastLabel" Content="." HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="10" Background="#FFAFEFFF" Visibility="Hidden" />
+
+		<!--<TextBox Grid.Row="0" Name="ImageFileNameLabel" HorizontalAlignment="Center" VerticalAlignment="Top">
+			<TextBox.Style>
+				<Style TargetType="TextBox">
+					<Setter Property="IsReadOnly" Value="True" />
+					<Setter Property="BorderThickness" Value="0" />
+					<Setter Property="TextWrapping" Value="Wrap" />
+				</Style>
+			</TextBox.Style>
+		</TextBox>-->
+
+		<Image Name="MainImageView" 
+			 Grid.Row="1"
+			 Stretch="Uniform"
+			 />
+
+		<Label Grid.Row="1" Foreground="#3F000000" HorizontalAlignment="Right" VerticalAlignment="Bottom">v 0.5.0</Label>
+
+		<StackPanel Name="StartingTip"
+				Grid.Row="1"
+				HorizontalAlignment="Right"
+				VerticalAlignment="Bottom"
+				Margin="0,0,10,10"
+				Background="#B2ABDEF3"
+				Orientation="Horizontal" Height="105" Width="390" >
+
+			<Image Source="/img/cooktto.gif" />
+			<StackPanel Orientation="Vertical" Width="Auto" Height="Auto">
+				<Label HorizontalAlignment="Right" FontWeight="Bold" FontSize="16" Margin="0,10,8,0">Start by choosing images.</Label>
+				<Label HorizontalAlignment="Right" Margin="30,0,10,0">Open the images you want to get started!</Label>
+				<Label Content="&#xE96E;" HorizontalAlignment="Right" FontFamily="{DynamicResource ButtonSymbolFont}" FontSize="20" Margin="0,0,23,0"/>
+			</StackPanel>
+		</StackPanel>
+
+		<StackPanel Grid.Row="2"
+			Orientation="Horizontal"
+			HorizontalAlignment="Right">
+			<StackPanel Orientation="Horizontal"
+					TextBlock.FontFamily="{DynamicResource ButtonSymbolFont}"
+					TextBlock.FontSize="{DynamicResource TimerButtonFontSize}"
+					
+					>
+				<Label Name="DebugText"
+					 FontFamily="Segoe UI"
+					 FontSize="12"
+					 Foreground="LightGray" Margin="10"
+					 >Something something</Label>
+
+
+				<Image Width="50" Height="50" Source="/img/641157062436323328.png" Margin="0,0,50,0" />
+
+				<Button Name="SettingsButton"
+					  
+					  Content="&#xE713;"
+					  Margin="5, 10"
+					  Width="{StaticResource buttonWidthNarrow}"
+					  ToolTip="Settings"
+
+					  />
+
+				<Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
+				<StackPanel Orientation="Vertical" Height="Auto">
+					<ProgressBar Name="TimeBar"
+							 Value="50" 
+							 Margin="5,2,5,0"
+							 Foreground="{DynamicResource TimerActiveColor}"
+							 />
+
+					<StackPanel Orientation="Horizontal" Height="{DynamicResource timerButtonsHeight}">
+						<Button Name="RestartTimerButton"
+							  
+							  Content="&#xE777;"
+							  Margin="5"
+							  Width="{DynamicResource buttonWidth}"
+							  ToolTip="Restart Timer"
+							  
+							  Click="RestartTimerButton_Click"
+							  />
+
+						<Button Name="PrevButton"
+							  
+							  Content="&#xE76B;"
+							  Margin="5"
+							  Width="{DynamicResource buttonWidth}"
+							  ToolTip="Previous Image"
+							  
+							  Click="PrevButton_Click"
+							  />
+
+						<Button Name="PlayPauseButton"
+							  
+							  Content="&#xE768;"
+							  Margin="5"
+							  Width="{DynamicResource buttonWidth}"
+							  
+							  Click="PlayPauseButton_Click"
+							  />
+						<Button Name="NextButton"
+							  
+							  Content="&#xE76C;"
+							  Margin="5"
+							  Width="{DynamicResource buttonWidth}"
+							  ToolTip="Next Image"
+							  
+							  Click="NextButton_Click"
+							  />
+					</StackPanel>
+				</StackPanel>
+				<Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
+
+				<Button Name="OpenFolderButton"
+					  Margin="5, 10"
+					  Width="{StaticResource buttonBigWidth}"
+					  
+					  Content="&#xED25;"
+					  					  
+					  Click="OpenFolderButton_Click"
+					  >
+					<Button.ToolTip>
+						<ToolTip>Open Images...</ToolTip>
+					</Button.ToolTip>
+
+				</Button>
+
+			</StackPanel>
+
+
+		</StackPanel>
+
+	</Grid>
+</Window>

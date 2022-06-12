@@ -1,0 +1,20 @@
+﻿<Application x:Class="PhortyFiveSeconds.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:PhortyFiveSeconds"
+		 xmlns:System="clr-namespace:System;assembly=mscorlib"
+             StartupUri="MainWindow.xaml">
+    <Application.Resources>
+		<System:Double x:Key="buttonWidth">50</System:Double>
+		<System:Double x:Key="buttonBigWidth">80</System:Double>
+		<System:Double x:Key="buttonWidthNarrow">30</System:Double>
+		<System:Double x:Key="timerButtonsHeight">40</System:Double>
+		<System:Double x:Key="TimerButtonFontSize">16</System:Double>
+		<FontFamily x:Key="ButtonSymbolFont">Segoe MDL2 Assets</FontFamily>
+		<SolidColorBrush x:Key="TimerActiveColor" Color="CornflowerBlue"/>
+		<SolidColorBrush x:Key="TimerPausedColor" Color="LightGray"/>
+		<SolidColorBrush x:Key="TimeBarPausedColor" Color="#FFFFDE95"/>
+		<SolidColorBrush x:Key="TimeBarActiveColor" Color="CornflowerBlue"/>
+	</Application.Resources>
+	
+</Application>
