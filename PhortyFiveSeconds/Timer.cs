@@ -3,17 +3,17 @@ using System.Collections.Generic;
 using System.Windows.Threading;
 
 namespace PhortyFiveSeconds;
-internal class Timer
+public class Timer
 {
 	const int SecondsToMilliseconds = 1000;
-
 	const int UpdateIntervalMilliseconds = 500;
-	readonly DispatcherTimer dispatcherTimer;
 
-	DateTime lastTime;
+	readonly DispatcherTimer dispatcherTimer;
 
 	int MillisecondsLeft { get; set; } = 30 * SecondsToMilliseconds;
 	int DurationMilliseconds { get; set; } = 30 * SecondsToMilliseconds;
+	DateTime lastTime;
+	bool elapsedThisRound = false;
 
 	bool isActive = false;
 	public bool IsActive
@@ -31,8 +31,6 @@ internal class Timer
 			}
 		}
 	}
-
-	bool elapsedThisRound = false;
 
 	public event Action? OnPlayPauseChanged;
 	public event Action? OnTick;

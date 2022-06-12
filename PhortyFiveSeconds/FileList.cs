@@ -14,9 +14,8 @@ internal class FileList
 
 	readonly List<FileData> files = new();
 
-	public string First => Get(0);
-
 	public int Count => files.Count;
+	public string First => Get(0);
 
 	public string Get (int index)
 	{

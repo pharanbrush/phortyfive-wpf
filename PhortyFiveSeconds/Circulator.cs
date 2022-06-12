@@ -9,16 +9,17 @@ namespace PhortyFiveSeconds;
 public class Circulator
 {
 	readonly List<int> reorderedIndexes = new();
-
-	public event Action? OnCurrentNumberChanged;
-
 	int CurrentNumber { get; set; } = 0;
+
 	public int CurrentIndex => IsPopulated ? reorderedIndexes[CurrentNumber] : 0;
 	public int Count => reorderedIndexes.Count;
 	public int MaxNumber => Count - 1;
 	public bool IsPopulated => Count > 0;
 
+	public event Action? OnCurrentNumberChanged;
+
 	public void MoveNext () => MoveCurrentNumberBy(1);
+
 	public void MovePrevious () => MoveCurrentNumberBy(-1);
 
 	public void StartNewOrder (int count)

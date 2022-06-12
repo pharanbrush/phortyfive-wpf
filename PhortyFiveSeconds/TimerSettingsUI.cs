@@ -8,14 +8,13 @@ internal class TimerSettingsUI
 {
 	readonly List<(MenuItem menuItem, int seconds)> presetMenuItems = new();
 	Action<int>? setDurationHandler;
-	ContextMenu? menu;
+	readonly ContextMenu menu = new();
 
 	internal void InitializeMenuChoices (Button settingsButton, IEnumerable<(int duration, string text)> itemsToAdd, Action<int> setDurationHandler)
 	{
 		this.setDurationHandler = setDurationHandler;
-
-		menu = new ContextMenu();
 		var menuItems = menu.Items;
+		menuItems.Clear();
 
 		menuItems.Add(new MenuItem { Header = "Timer duration", IsEnabled = false, });
 		menuItems.Add(new Separator());
@@ -37,6 +36,16 @@ internal class TimerSettingsUI
 		settingsButton.Click += (_, _) => menu.IsOpen = true;
 	}
 
+	internal void UpdateSelectedState (int currentDurationSeconds)
+	{
+		foreach (var (menuItem, seconds) in presetMenuItems)
+		{
+			bool isChosen = seconds == currentDurationSeconds;
+			menuItem.IsEnabled = !isChosen;
+			menuItem.IsChecked = isChosen;
+		}
+	}
+
 	void AddDurationItem (int durationSeconds, string text)
 	{
 		var newItem = new MenuItem
@@ -47,15 +56,5 @@ internal class TimerSettingsUI
 
 		menu?.Items.Add(newItem);
 		presetMenuItems.Add((newItem, durationSeconds));
-	}
-
-	public void UpdateSelectedState (int currentDurationSeconds)
-	{
-		foreach (var (menuItem, seconds) in presetMenuItems)
-		{
-			bool isChosen = seconds == currentDurationSeconds;
-			menuItem.IsEnabled = !isChosen;
-			menuItem.IsChecked = isChosen;
-		}
 	}
 }
