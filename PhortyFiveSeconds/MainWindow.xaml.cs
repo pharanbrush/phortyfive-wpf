@@ -120,8 +120,10 @@ public partial class MainWindow : Window
 
 	void UserOpenFiles ()
 	{
-		var filePaths = FileUtilities.OpenImages();
-		LoadFilesAndStartNewSet(filePaths);
+		if (FileUtilities.OpenPickerForImages(out IEnumerable<string> filePaths))
+		{
+			LoadFilesAndStartNewSet(filePaths);
+		}
 	}
 
 	void LoadFilesAndStartNewSet (IEnumerable<string> filePaths)
@@ -130,20 +132,26 @@ public partial class MainWindow : Window
 		FileList.Load(imagePaths);
 		Timer.Restart();
 
-		if (FileList.Count > 0)
+		if (FileList.IsPopulated)
 		{
-			Circulator.StartNewOrder(FileList.Count);
-			Timer.IsActive = true;
-			DismissTips();
-			UpdateSettingsTextBlock();
-			PlaySound();
-		}
-		else
-		{
-			Circulator.Clear();
+			TryStartNewSet();
 		}
 
 		UpdateInteractibleState();
+	}
+
+	void TryStartNewSet ()
+	{
+		if (!FileList.IsPopulated)
+		{
+			Circulator.Clear();
+			return;
+		}
+
+		Circulator.StartNewOrder(FileList.Count);
+		Timer.IsActive = true;
+		DismissTips();
+		UpdateSettingsTextBlock();
 	}
 
 	void UpdateTimerIndicatorTick ()

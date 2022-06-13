@@ -18,11 +18,12 @@ static internal class FileUtilities
 			{
 				sb.Append($"*.{type};");
 			}
+
 			return sb.ToString();
 		}
 	}
 
-	internal static IEnumerable<string> OpenImages ()
+	internal static bool OpenPickerForImages (out IEnumerable<string> outputFileNames)
 	{
 		var imageFilter = ImageTypesFilter;
 		var openFileDialog = new OpenFileDialog
@@ -31,8 +32,10 @@ static internal class FileUtilities
 			Filter = $"Image files ({imageFilter})|{imageFilter}|All files (*.*)|*.*",
 		};
 
-		openFileDialog.ShowDialog();
-		return openFileDialog.FileNames;
+		bool userPressedOk = openFileDialog.ShowDialog() ?? false;
+
+		outputFileNames = openFileDialog.FileNames;
+		return userPressedOk;
 	}
 
 	internal static IEnumerable<string> EnumerateImages (IEnumerable<string> filePaths)
@@ -56,6 +59,7 @@ static internal class FileUtilities
 				return true;
 			}
 		}
+
 		return false;
 	}
 
