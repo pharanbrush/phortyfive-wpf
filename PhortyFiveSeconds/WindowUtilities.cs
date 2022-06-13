@@ -1,16 +1,60 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 
 namespace PhortyFiveSeconds;
 
-static internal class WindowUtilities
+static public class WindowUtilities
 {
-	internal static void InvokeDelayed (int delaySeconds, Action action) =>
+	public static void InvokeDelayed (int delaySeconds, Action action) =>
 		Task.Delay(new TimeSpan(0, 0, delaySeconds)).ContinueWith(t => action.Invoke());
 
-	internal static void InvokeForUI (Window window, Action action)
+	public static void InvokeForUI (Window window, Action action) => window.Dispatcher.Invoke(action);
+
+	public static void MakeTooltipImmediate (this FrameworkElement element)
 	{
-		window.Dispatcher.Invoke(action);
+		ToolTipService.SetInitialShowDelay(element, 10);
+	}
+
+	public static void SetTooltipPlacement (this FrameworkElement element, PlacementMode mode)
+	{
+		ToolTipService.SetPlacement(element, mode);
+	}
+
+	public static void SetTooltipPlacement (this IEnumerable<FrameworkElement> elements, PlacementMode mode)
+	{
+		foreach (var element in elements)
+		{
+			ToolTipService.SetPlacement(element, mode);
+		}
+	}
+
+	public static void AllowRightClickCopy (Label label, string menuItemLabel = "Copy")
+	{
+		ContextMenu contextMenu = label.ContextMenu;
+		if (contextMenu is null)
+		{
+			contextMenu = new();
+			label.ContextMenu = contextMenu;
+		}
+
+		MenuItem copy = new() { Header = menuItemLabel };
+
+		copy.Click += (_, _) => CopyLabelTextToClipboard(label);
+		contextMenu.Items.Add(copy);
+	}
+
+	public static void CopyLabelTextToClipboard (Label label)
+	{
+		var labelContent = label.Content;
+		if (labelContent is null) return;
+		if (labelContent is string labelText)
+		{
+			if (string.IsNullOrEmpty(labelText)) return;
+			Clipboard.SetText(labelText);
+		}
 	}
 }
