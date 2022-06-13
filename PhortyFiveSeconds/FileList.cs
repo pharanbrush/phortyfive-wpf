@@ -15,6 +15,7 @@ internal class FileList
 	readonly List<FileData> files = new();
 
 	public int Count => files.Count;
+	public bool IsPopulated => files.Count > 0;
 	public string First => Get(0);
 
 	public string Get (int index)
