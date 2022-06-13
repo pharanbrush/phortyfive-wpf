@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using System.Media;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
+using System.Windows.Input;
 using System.Windows.Media;
 
 namespace PhortyFiveSeconds;
 
-/// <summary>
-/// Interaction logic for MainWindow.xaml
-/// </summary>
 public partial class MainWindow : Window
 {
 	const int TimerIndicatorMaximum = 200;
@@ -22,7 +21,7 @@ public partial class MainWindow : Window
 	readonly Toaster Toaster;
 	readonly SoundPlayer soundPlayer = new(Properties.Resources.ClackSound);
 
-	bool IsImageSetLoaded => Circulator.IsPopulated;
+	bool IsImageSetReady => Circulator.IsPopulated;
 	static Brush? GetBrush (string key) => Application.Current.Resources[key] as Brush;
 
 	static string AssemblyVersionNumber => System.Reflection.Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? string.Empty;
@@ -41,12 +40,8 @@ public partial class MainWindow : Window
 	public MainWindow ()
 	{
 		InitializeComponent();
-		Toaster = new(ToastLabel);
+		SetTimerSettingsPanelVisible(false);
 
-		ImageView = new(MainImageView, ImageFileNameLabel);
-		ImageView.HandleClipboardToast(Toaster.Toast);
-
-		soundPlayer.LoadAsync();
 		VersionNumberOverlayLabel.Content = AssemblyVersionNumber;
 
 		Timer.OnPlayPauseChanged += UpdatePlayPauseButtonState;
@@ -56,8 +51,6 @@ public partial class MainWindow : Window
 		Timer.OnElapsed += TryMoveNext;
 		Timer.OnDurationChanged += UpdateTimerDurationIndicators;
 		Timer.SetDuration(30);
-
-		TimeBar.Maximum = TimerIndicatorMaximum;
 
 		(int duration, string text)[] durationMenuItems = {
 			(15, "15 seconds"),
@@ -69,10 +62,37 @@ public partial class MainWindow : Window
 			(10 * 60, "10 minutes"),
 		};
 
-		TimerSettingsUI.InitializeMenuChoices(SettingsButton, durationMenuItems, SetTimerDuration);
 		Circulator.OnCurrentNumberChanged += UpdateCurrentImage;
 		Circulator.OnCurrentNumberChanged += PlaySound;
+
+		Toaster = new(ToastLabel);
+		ImageView = new(MainImageView, ImageFileNameLabel);
+		ImageView.HandleClipboardToast(Toaster.Toast);
+
 		soundPlayer.LoadAsync();
+
+		TimeBar.Maximum = TimerIndicatorMaximum;
+		TimerSettingsUI.InitializeMenuChoices(SettingsButton, durationMenuItems, SetTimerDuration, () => SetTimerSettingsPanelVisible(true));
+		NonEditableTimerLabel.MouseDown += (_, mouseEvent) => {
+			mouseEvent.Handled = true;
+			SetTimerSettingsPanelVisible(true);
+		};
+		SecondsInputTextbox.LostFocus += (_, _) => SetTimerSettingsPanelVisible(false);
+		SecondsInputTextbox.KeyDown += (_, keyEvent) => {
+			var key = keyEvent.Key;
+			if (key is Key.Escape)
+			{
+				keyEvent.Handled = true;
+				SecondsInputTextbox_Cancel();
+			}
+			else if (key is Key.Enter)
+			{
+				keyEvent.Handled = true;
+				SecondsInputTextBox_Enter();
+			}
+		};
+		this.MouseDown += (_, _) => SecondsInputTextbox_Cancel();
+
 		OpenFolderButton.MakeTooltipImmediate();
 		OpenFolderButton.SetTooltipPlacement(PlacementMode.Top);
 
@@ -86,15 +106,30 @@ public partial class MainWindow : Window
 		UpdateInteractibleState();
 	}
 
+	// BUTTONS
 	void OpenFolderButton_Click (object sender, RoutedEventArgs e) => UserOpenFiles();
-	void RestartTimerButton_Click (object sender, RoutedEventArgs e) => DoIfValidState(Timer.Restart);
+	void RestartTimerButton_Click (object sender, RoutedEventArgs e) => DoIfImageSetIsLoaded(Timer.Restart);
 	void PrevButton_Click (object sender, RoutedEventArgs e) => TryMovePrevious();
-	void PlayPauseButton_Click (object sender, RoutedEventArgs e) => DoIfValidState(Timer.TogglePlayPause);
+	void PlayPauseButton_Click (object sender, RoutedEventArgs e) => DoIfImageSetIsLoaded(Timer.TogglePlayPause);
 	void NextButton_Click (object sender, RoutedEventArgs e) => TryMoveNext();
 
-	void DoIfValidState (Action action)
+	void SecondsInputTextBox_Enter ()
 	{
-		if (IsImageSetLoaded)
+		var userInputString = SecondsInputTextbox.Text;
+		TimerSettingsUI.TrySetDuration(userInputString);
+		SetTimerSettingsPanelVisible(false);
+	}
+
+	void SecondsInputTextbox_Cancel ()
+	{
+		var unchangedTimerValue = Timer.DurationSeconds;
+		SecondsInputTextbox.Text = unchangedTimerValue.ToString();
+		SetTimerSettingsPanelVisible(false);
+	}
+
+	void DoIfImageSetIsLoaded (Action action)
+	{
+		if (IsImageSetReady)
 			action.Invoke();
 	}
 
@@ -106,7 +141,7 @@ public partial class MainWindow : Window
 
 	void TryMoveNext ()
 	{
-		DoIfValidState(() => {
+		DoIfImageSetIsLoaded(() => {
 			Circulator.MoveNext();
 			Timer.Restart();
 		});
@@ -114,7 +149,7 @@ public partial class MainWindow : Window
 
 	void TryMovePrevious ()
 	{
-		DoIfValidState(() => {
+		DoIfImageSetIsLoaded(() => {
 			Circulator.MovePrevious();
 			Timer.Restart();
 		});
@@ -170,14 +205,36 @@ public partial class MainWindow : Window
 
 	void UpdateSettingsTextBlock ()
 	{
-		DebugText.Content = $"{FileList.Count} images : {Timer.DurationSeconds} seconds each";
+		ImagesCountLabel.Content = $"{FileList.Count} images";
 	}
 
 	void UpdateTimerDurationIndicators ()
 	{
 		TimerSettingsUI.UpdateSelectedState(Timer.DurationSeconds);
+
+		string secondsText = Timer.DurationSeconds.ToString();
+		SecondsInputTextbox.Text = secondsText;
+		NonEditableTimerLabel.Content = $"{secondsText} seconds each";
+
 		UpdateTimerPlayPausedIndicator();
 		UpdateSettingsTextBlock();
+	}
+
+	void SetTimerSettingsPanelVisible (bool visible)
+	{
+		var hide = Visibility.Collapsed;
+		var show = Visibility.Visible;
+		EditableTimerSettingsPanel.Visibility = visible ? show : hide;
+		NonEditableTimerLabel.Visibility = visible ? hide : show;
+
+		if (visible)
+		{
+			SecondsInputTextbox.Focus();
+			SecondsInputTextbox.SelectAll();
+		} else
+		{
+			SecondsInputTextbox.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
+		}
 	}
 
 	void UpdateTimerPlayPausedIndicator ()

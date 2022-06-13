@@ -11,7 +11,7 @@
 	<Window.Resources>
 		<SolidColorBrush x:Key="ImageFileNameLabelColor" Color="#4C373737"/>
 	</Window.Resources>
-	<Grid>
+	<Grid Name="MainGrid" Focusable="True">
 		<Grid.RowDefinitions>
 			<RowDefinition Height="Auto" />
 			<RowDefinition Height="*" />
@@ -25,16 +25,6 @@
 		</Label>
 
 		<Label Grid.Row="0" Name="ToastLabel" Content="." HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="10" Background="#FFAFEFFF" Visibility="Hidden" />
-
-		<!--<TextBox Grid.Row="0" Name="ImageFileNameLabel" HorizontalAlignment="Center" VerticalAlignment="Top">
-			<TextBox.Style>
-				<Style TargetType="TextBox">
-					<Setter Property="IsReadOnly" Value="True" />
-					<Setter Property="BorderThickness" Value="0" />
-					<Setter Property="TextWrapping" Value="Wrap" />
-				</Style>
-			</TextBox.Style>
-		</TextBox>-->
 
 		<Image Name="MainImageView" 
 			 Grid.Row="1"
@@ -71,21 +61,40 @@
 					TextBlock.FontSize="{DynamicResource TimerButtonFontSize}"
 					
 					>
-				<Label Name="DebugText"
-					 FontFamily="Segoe UI"
-					 FontSize="12"
-					 Foreground="LightGray" Margin="10"
-					 >Something something</Label>
 
+				<Image Width="50" Height="50" Source="/img/641157062436323328.png" Margin="0,0,20,0" />
 
-				<Image Width="50" Height="50" Source="/img/641157062436323328.png" Margin="0,0,50,0" />
+				<StackPanel Orientation="Horizontal"
+						TextBlock.FontFamily="Segoe UI"
+						TextBlock.FontSize="12" HorizontalAlignment="Right" VerticalAlignment="Center">
+					<Label Name="ImagesCountLabel" Foreground="LightGray" HorizontalAlignment="Right" Content="0 images"/>
+					<Label Foreground="LightGray" HorizontalAlignment="Right" Content=":"/>
+					<Label Name="NonEditableTimerLabel" Foreground="LightGray" HorizontalAlignment="Right" />
+					<StackPanel Name="EditableTimerSettingsPanel" Orientation="Horizontal" HorizontalAlignment="Right" Background="{DynamicResource TimeBarActiveColor}" VerticalAlignment="Center">
+						<TextBox Name="SecondsInputTextbox"
+							   
+							   VerticalAlignment="Center"
+							   Margin="10, 3,0,3"
+							   MinWidth="20"
+							   MaxLines="1"
+							   HorizontalScrollBarVisibility="Hidden"
+							   VerticalScrollBarVisibility="Hidden"
+							   Padding="3"
+							   
+							   BorderBrush="#FFE8E9ED"
+							   SelectionOpacity="0.2"
+							   
+							   UndoLimit="2"
+							    >30</TextBox>
+						<Label Foreground="#BF000000" Padding="4, 8" Margin="0,0,10,0" >seconds each</Label>
+					</StackPanel>
+				</StackPanel>
 
 				<Button Name="SettingsButton"
 					  
 					  Content="&#xE713;"
 					  Margin="5, 10"
 					  Width="{StaticResource buttonWidthNarrow}"
-					  ToolTip="Settings"
 
 					  />
 

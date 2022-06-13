@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace PhortyFiveSeconds;
@@ -10,9 +11,13 @@ internal class TimerSettingsUI
 	Action<int>? setDurationHandler;
 	readonly ContextMenu menu = new();
 
-	internal void InitializeMenuChoices (Button settingsButton, IEnumerable<(int duration, string text)> itemsToAdd, Action<int> setDurationHandler)
+	Action? OnChooseCustom;
+
+	internal void InitializeMenuChoices (Button settingsButton, IEnumerable<(int duration, string text)> itemsToAdd, Action<int> setDurationHandler, Action onChooseCustom)
 	{
 		this.setDurationHandler = setDurationHandler;
+		this.OnChooseCustom = onChooseCustom;
+
 		var menuItems = menu.Items;
 		menuItems.Clear();
 
@@ -25,15 +30,29 @@ internal class TimerSettingsUI
 		}
 
 		menuItems.Add(new Separator());
-		menuItems.Add(new MenuItem()
+
+		var customItem = new MenuItem()
 		{
 			Header = "Custom...",
-			IsEnabled = false,
-		});
+		};
+		customItem.Click += (_, _) => OnChooseCustom?.Invoke();
+		menuItems.Add(customItem);
 
 		menu.PlacementTarget = settingsButton;
 		menu.Placement = System.Windows.Controls.Primitives.PlacementMode.Top;
 		settingsButton.Click += (_, _) => menu.IsOpen = true;
+	}
+
+	internal bool TrySetDuration (string durationString)
+	{
+		if (int.TryParse(durationString, out int duration))
+		{
+			duration = Math.Clamp(duration, 5, 30 * 60);
+			setDurationHandler?.Invoke(duration);
+			return true;
+		}
+
+		return false;
 	}
 
 	internal void UpdateSelectedState (int currentDurationSeconds)
