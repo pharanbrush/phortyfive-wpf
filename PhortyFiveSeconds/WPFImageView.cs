@@ -23,25 +23,24 @@ internal class WPFImageView
 
 	public WPFImageView (Image imageElement, Label fileNameLabel)
 	{
-		
+
 		ImageElement = imageElement;
-		ImageElement.MouseDown += (_,_) => CycleStretchMode();
+		ImageElement.MouseDown += (_, _) => CycleStretchMode();
 
 		FileNameLabel = fileNameLabel;
-		FileNameLabel.MouseDoubleClick += (_,_) => CopyFilenameToClipboard();
-	}
 
+		WindowUtilities.MakeTooltipImmediate(FileNameLabel);
+		WindowUtilities.AllowRightClickCopy(FileNameLabel, "Copy filename");
+		FileNameLabel.MouseDoubleClick += (_, _) => CopyFilenameToClipboard();
+	}
 	public void HandleClipboardToast (Action<string> toastHandler)
 	{
 		this.toastHandler = toastHandler;
 	}
 
-	void CopyFilenameToClipboard () {
-		string labelText = this.LabelText;
-		if (string.IsNullOrEmpty(labelText)) return;
-
-		Clipboard.SetText(this.LabelText);
-
+	void CopyFilenameToClipboard ()
+	{
+		WindowUtilities.CopyLabelTextToClipboard(FileNameLabel);
 		toastHandler?.Invoke("Copied to clipboard.");
 	}
 
