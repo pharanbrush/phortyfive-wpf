@@ -27,6 +27,17 @@ public partial class MainWindow : Window
 
 	static string AssemblyVersionNumber => System.Reflection.Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? string.Empty;
 
+	IEnumerable<Button> ImageSetButtons
+	{
+		get
+		{
+			yield return PlayPauseButton;
+			yield return NextButton;
+			yield return PrevButton;
+			yield return RestartTimerButton;
+		}
+	}
+
 	public MainWindow ()
 	{
 		InitializeComponent();
@@ -60,6 +71,13 @@ public partial class MainWindow : Window
 
 		TimerSettingsUI.InitializeMenuChoices(SettingsButton, durationMenuItems, SetTimerDuration);
 		Circulator.OnCurrentNumberChanged += UpdateCurrentImage;
+		OpenFolderButton.MakeTooltipImmediate();
+		OpenFolderButton.SetTooltipPlacement(PlacementMode.Top);
+
+		foreach (var button in ImageSetButtons)
+		{
+			button.MakeTooltipImmediate();
+		}
 
 		UpdatePlayPauseButtonState();
 		UpdateTimerDurationIndicators();
