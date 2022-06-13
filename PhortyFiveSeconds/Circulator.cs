@@ -24,6 +24,12 @@ public class Circulator
 
 	public void StartNewOrder (int count)
 	{
+		if (count <= 0)
+		{
+			Clear();
+			return;
+		}
+
 		ResetToDefaultOrder(count);
 		GenerateShuffledOrder();
 		SetCurrentNumber(0);
