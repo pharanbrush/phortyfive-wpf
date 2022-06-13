@@ -71,6 +71,8 @@ public partial class MainWindow : Window
 
 		TimerSettingsUI.InitializeMenuChoices(SettingsButton, durationMenuItems, SetTimerDuration);
 		Circulator.OnCurrentNumberChanged += UpdateCurrentImage;
+		Circulator.OnCurrentNumberChanged += PlaySound;
+		soundPlayer.LoadAsync();
 		OpenFolderButton.MakeTooltipImmediate();
 		OpenFolderButton.SetTooltipPlacement(PlacementMode.Top);
 
@@ -164,7 +166,6 @@ public partial class MainWindow : Window
 		int currentIndex = Circulator.CurrentIndex;
 		string currentImagePath = FileList.Get(currentIndex);
 		ImageView.SetImage(currentImagePath);
-		PlaySound();
 	}
 
 	void UpdateSettingsTextBlock ()
@@ -204,15 +205,14 @@ public partial class MainWindow : Window
 
 	void UpdateInteractibleState ()
 	{
-		PlayPauseButton.IsEnabled = IsImageSetLoaded;
-		NextButton.IsEnabled = IsImageSetLoaded;
-		PrevButton.IsEnabled = IsImageSetLoaded;
-		RestartTimerButton.IsEnabled = IsImageSetLoaded;
+		foreach (var button in ImageSetButtons)
+		{
+			button.IsEnabled = IsImageSetReady;
+		}
 	}
 
 	void PlaySound ()
 	{
-		soundPlayer.Stop();
 		soundPlayer.Play();
 	}
 }
