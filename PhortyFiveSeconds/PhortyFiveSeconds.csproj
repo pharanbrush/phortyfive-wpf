@@ -6,12 +6,18 @@
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <StartupObject>PhortyFiveSeconds.App</StartupObject>
-    <ApplicationIcon>PhortyFiveSecondsv3.ico</ApplicationIcon>
-    <PackageIcon></PackageIcon>
+    <ApplicationIcon>PhortyFive Icon v4.ico</ApplicationIcon>
+    <PackageIcon>PhortyFive Icon v4.png</PackageIcon>
+
+	  <AssemblyName>PhortyFiveSeconds</AssemblyName>
+	  <Copyright>Copyright © PharanBrush 2022</Copyright>
+	  <ProductVersion>0.5.0</ProductVersion>	  
+	  <AssemblyVersion>0.5.*</AssemblyVersion>
+	  <Deterministic>false</Deterministic>
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="PhortyFiveSecondsv3.ico" />
+    <Content Include="PhortyFive Icon v4.ico" />
   </ItemGroup>
 
   <ItemGroup>
