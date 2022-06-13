@@ -25,6 +25,8 @@ public partial class MainWindow : Window
 	bool IsImageSetLoaded => Circulator.IsPopulated;
 	static Brush? GetBrush (string key) => Application.Current.Resources[key] as Brush;
 
+	static string AssemblyVersionNumber => System.Reflection.Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? string.Empty;
+
 	public MainWindow ()
 	{
 		InitializeComponent();
@@ -34,6 +36,7 @@ public partial class MainWindow : Window
 		ImageView.HandleClipboardToast(Toaster.Toast);
 
 		soundPlayer.LoadAsync();
+		VersionNumberOverlayLabel.Content = AssemblyVersionNumber;
 
 		Timer.OnPlayPauseChanged += UpdatePlayPauseButtonState;
 		Timer.OnPlayPauseChanged += UpdateTimerPlayPausedIndicator;

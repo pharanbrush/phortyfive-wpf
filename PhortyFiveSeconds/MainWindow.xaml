@@ -41,7 +41,11 @@
 			 Stretch="Uniform"
 			 />
 
-		<Label Grid.Row="1" Foreground="#3F000000" HorizontalAlignment="Right" VerticalAlignment="Bottom">v 0.5.0</Label>
+		<Label Name="VersionNumberOverlayLabel"
+			 Grid.Row="1"
+			 Foreground="#3F000000"
+			 HorizontalAlignment="Right"
+			 VerticalAlignment="Bottom">v 0.5.0</Label>
 
 		<StackPanel Name="StartingTip"
 				Grid.Row="1"
