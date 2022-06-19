@@ -107,11 +107,11 @@ public partial class MainWindow : Window
 	}
 
 	// BUTTONS
-	void OpenFolderButton_Click (object sender, RoutedEventArgs e) => UserOpenFiles();
-	void RestartTimerButton_Click (object sender, RoutedEventArgs e) => DoIfImageSetIsLoaded(Timer.Restart);
-	void PrevButton_Click (object sender, RoutedEventArgs e) => TryMovePrevious();
-	void PlayPauseButton_Click (object sender, RoutedEventArgs e) => DoIfImageSetIsLoaded(Timer.TogglePlayPause);
-	void NextButton_Click (object sender, RoutedEventArgs e) => TryMoveNext();
+	void OpenFolderCommand (object sender, RoutedEventArgs e) => UserOpenFiles();
+	void RestartTimerCommand (object sender, RoutedEventArgs e) => TryRestartTimer();
+	void PreviousImageCommand (object sender, RoutedEventArgs e) => TryMovePrevious();
+	void PlayPauseCommand (object sender, RoutedEventArgs e) => DoIfImageSetIsLoaded(Timer.TogglePlayPause);
+	void NextImageCommand (object sender, RoutedEventArgs e) => TryMoveNext();
 
 	void SecondsInputTextBox_Enter ()
 	{
@@ -144,6 +144,14 @@ public partial class MainWindow : Window
 		DoIfImageSetIsLoaded(() => {
 			Circulator.MoveNext();
 			Timer.Restart();
+		});
+	}
+
+	void TryRestartTimer ()
+	{
+		DoIfImageSetIsLoaded(() => {
+			Timer.Restart();
+			PlaySound();
 		});
 	}
 

@@ -17,12 +17,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="TurnipsWowCat.png" />
+    <None Remove="UrgryAnesthesia.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="PhortyFive Icon v4.ico" />
   </ItemGroup>
 
   <ItemGroup>
     <Resource Include="img\641157062436323328.png" />
     <Resource Include="img\cooktto.gif" />
+    <Resource Include="img\TurnipsWowCat.png" />
+    <Resource Include="img\UrgryAnesthesia.png" />
   </ItemGroup>
 
   <ItemGroup>
