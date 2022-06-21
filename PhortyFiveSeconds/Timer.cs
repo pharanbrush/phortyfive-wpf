@@ -27,18 +27,18 @@ public class Timer
 
 			if (originalValue != isActive)
 			{
-				OnPlayPauseChanged?.Invoke();
+				PlayPauseChanged?.Invoke();
 			}
 		}
 	}
 
-	public event Action? OnPlayPauseChanged;
-	public event Action? OnTick;
-	public event Action? OnElapsed;
-	public event Action? OnRestart;
-	public event Action? OnDurationChanged;
 
 	public int DurationSeconds => DurationMilliseconds / SecondsToMilliseconds;
+	public event Action? PlayPauseChanged;
+	public event Action? Tick;
+	public event Action? Elapsed;
+	public event Action? Restarted;
+	public event Action? DurationChanged;
 
 	public float FractionLeft => (float)MillisecondsLeft / (float)DurationMilliseconds;
 
@@ -61,7 +61,7 @@ public class Timer
 	{
 		DurationMilliseconds = seconds * SecondsToMilliseconds;
 		elapsedThisRound = false;
-		OnDurationChanged?.Invoke();
+		DurationChanged?.Invoke();
 	}
 
 	public void Restart ()
@@ -71,7 +71,7 @@ public class Timer
 		lastTime = DateTime.Now;
 		MillisecondsLeft = DurationMilliseconds;
 		elapsedThisRound = false;
-		OnRestart?.Invoke();
+		Restarted?.Invoke();
 	}
 
 	void HandleTimerTick (object? sender, EventArgs e)
@@ -82,9 +82,9 @@ public class Timer
 			if (!elapsedThisRound && MillisecondsLeft < 0)
 			{
 				elapsedThisRound = true; // This needs to be set before invoking OnElapsed because a handler may call a restart.
-				OnElapsed?.Invoke();
+				Elapsed?.Invoke();
 			}
-			OnTick?.Invoke();
+			Tick?.Invoke();
 		}
 	}
 

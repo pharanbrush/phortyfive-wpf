@@ -44,13 +44,13 @@ public partial class MainWindow : Window
 
 		VersionNumberOverlayLabel.Content = AssemblyVersionNumber;
 
-		Timer.OnPlayPauseChanged += UpdatePlayPauseButtonState;
-		Timer.OnPlayPauseChanged += UpdateTimerPlayPausedIndicator;
-		Timer.OnRestart += UpdateTimerIndicatorTick;
-		Timer.OnTick += UpdateTimerIndicatorTick;
-		Timer.OnElapsed += TryMoveNext;
-		Timer.OnDurationChanged += UpdateTimerDurationIndicators;
 		Timer.SetDuration(30);
+		Timer.PlayPauseChanged += UpdatePlayPauseButtonState;
+		Timer.PlayPauseChanged += UpdateTimerPlayPausedIndicator;
+		Timer.Restarted += UpdateTimerIndicatorTick;
+		Timer.Tick += UpdateTimerIndicatorTick;
+		Timer.Elapsed += TryMoveNext;
+		Timer.DurationChanged += UpdateTimerDurationIndicators;
 
 		(int duration, string text)[] durationMenuItems = {
 			(15, "15 seconds"),
