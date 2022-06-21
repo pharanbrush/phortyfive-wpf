@@ -5,13 +5,13 @@ using System.Windows.Threading;
 namespace PhortyFiveSeconds;
 public class Timer
 {
-	const int SecondsToMilliseconds = 1000;
-	const int UpdateIntervalMilliseconds = 500;
+	readonly TimeSpan UpdateInterval = TimeSpan.FromMilliseconds(400);
 
 	readonly DispatcherTimer dispatcherTimer;
 
-	int MillisecondsLeft { get; set; } = 30 * SecondsToMilliseconds;
-	int DurationMilliseconds { get; set; } = 30 * SecondsToMilliseconds;
+	TimeSpan TimeLeft { get; set; } = TimeSpan.FromSeconds(30);
+	TimeSpan Duration { get; set; } = TimeSpan.FromSeconds(30);
+
 	DateTime lastTime;
 	bool elapsedThisRound = false;
 
@@ -32,15 +32,14 @@ public class Timer
 		}
 	}
 
-
-	public int DurationSeconds => DurationMilliseconds / SecondsToMilliseconds;
 	public event Action? PlayPauseChanged;
 	public event Action? Tick;
 	public event Action? Elapsed;
 	public event Action? Restarted;
 	public event Action? DurationChanged;
 
-	public float FractionLeft => (float)MillisecondsLeft / (float)DurationMilliseconds;
+	public int DurationSeconds => (int)Duration.TotalSeconds;
+	public double FractionLeft => (TimeLeft.TotalMilliseconds / Duration.TotalMilliseconds);
 
 	public void Pause () => this.IsActive = false;
 	public void Resume () => this.IsActive = true;
@@ -50,16 +49,16 @@ public class Timer
 	{
 		dispatcherTimer = new(DispatcherPriority.Normal)
 		{
-			Interval = new TimeSpan(0, 0, 0, 0, UpdateIntervalMilliseconds)
+			Interval = UpdateInterval
 		};
-		dispatcherTimer.Tick += HandleTimerTick;
+		dispatcherTimer.Tick += TimerTickEventHandler;
 
 		lastTime = DateTime.Now;
 	}
 
-	public void SetDuration (int seconds)
+	public void SetDuration (TimeSpan newDuration)
 	{
-		DurationMilliseconds = seconds * SecondsToMilliseconds;
+		Duration = newDuration;
 		elapsedThisRound = false;
 		DurationChanged?.Invoke();
 	}
@@ -69,19 +68,20 @@ public class Timer
 		dispatcherTimer.Stop();
 		dispatcherTimer.Start();
 		lastTime = DateTime.Now;
-		MillisecondsLeft = DurationMilliseconds;
+		TimeLeft = Duration;
 		elapsedThisRound = false;
 		Restarted?.Invoke();
 	}
 
-	void HandleTimerTick (object? sender, EventArgs e)
+	void TimerTickEventHandler (object? sender, EventArgs e)
 	{
+
 		if (IsActive)
 		{
 			UpdateMillisecondsLeft();
-			if (!elapsedThisRound && MillisecondsLeft < 0)
+			if (!elapsedThisRound && TimeLeft.TotalMilliseconds < 0)
 			{
-				elapsedThisRound = true; // This needs to be set before invoking OnElapsed because a handler may call a restart.
+				elapsedThisRound = true;
 				Elapsed?.Invoke();
 			}
 			Tick?.Invoke();
@@ -91,9 +91,8 @@ public class Timer
 	void UpdateMillisecondsLeft ()
 	{
 		var now = DateTime.Now;
-		var deltaDateTime = now - lastTime;
-		var deltaTimeMilliseconds = (int)deltaDateTime.TotalMilliseconds;
-		MillisecondsLeft -= deltaTimeMilliseconds;
+		var deltaTime = now - lastTime;
+		TimeLeft -= deltaTime;
 
 		lastTime = now;
 	}

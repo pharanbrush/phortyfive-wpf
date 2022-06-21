@@ -44,13 +44,13 @@ public partial class MainWindow : Window
 
 		VersionNumberOverlayLabel.Content = AssemblyVersionNumber;
 
-		Timer.SetDuration(30);
 		Timer.PlayPauseChanged += UpdatePlayPauseButtonState;
 		Timer.PlayPauseChanged += UpdateTimerPlayPausedIndicator;
 		Timer.Restarted += UpdateTimerIndicatorTick;
 		Timer.Tick += UpdateTimerIndicatorTick;
 		Timer.Elapsed += TryMoveNext;
 		Timer.DurationChanged += UpdateTimerDurationIndicators;
+		Timer.SetDuration(TimeSpan.FromSeconds(30));
 
 		(int duration, string text)[] durationMenuItems = {
 			(15, "15 seconds"),
@@ -72,7 +72,7 @@ public partial class MainWindow : Window
 		soundPlayer.LoadAsync();
 
 		TimeBar.Maximum = TimerIndicatorMaximum;
-		TimerSettingsUI.InitializeMenuChoices(SettingsButton, durationMenuItems, SetTimerDuration, () => SetTimerSettingsPanelVisible(true));
+		TimerSettingsUI.InitializeMenuChoices(SettingsButton, durationMenuItems, SetTimerDurationSeconds, () => SetTimerSettingsPanelVisible(true));
 		NonEditableTimerLabel.MouseDown += (_, mouseEvent) => {
 			mouseEvent.Handled = true;
 			SetTimerSettingsPanelVisible(true);
@@ -133,9 +133,9 @@ public partial class MainWindow : Window
 			action.Invoke();
 	}
 
-	void SetTimerDuration (int durationSeconds)
+	void SetTimerDurationSeconds (int durationSeconds)
 	{
-		Timer.SetDuration(durationSeconds);
+		Timer.SetDuration(TimeSpan.FromSeconds(30));
 		Timer.Restart();
 	}
 

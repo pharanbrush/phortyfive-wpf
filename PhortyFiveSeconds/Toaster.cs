@@ -19,7 +19,7 @@ internal class Toaster
 	public Toaster (Label label)
 	{
 		this.label = label;
-		timer = new() { Interval = new TimeSpan(0, 0, 2) };
+		timer = new() { Interval = TimeSpan.FromSeconds(2) };
 
 		timer.Tick += (_, _) => {
 			timer.Stop();
