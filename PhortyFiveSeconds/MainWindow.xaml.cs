@@ -137,6 +137,7 @@ public partial class MainWindow : Window
 	{
 		Timer.SetDuration(TimeSpan.FromSeconds(durationSeconds));
 		Timer.Restart();
+		SetTimerSettingsPanelVisible(false);
 	}
 
 	void TryMoveNext ()
