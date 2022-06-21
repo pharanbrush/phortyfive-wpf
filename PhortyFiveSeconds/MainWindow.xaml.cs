@@ -135,7 +135,7 @@ public partial class MainWindow : Window
 
 	void SetTimerDurationSeconds (int durationSeconds)
 	{
-		Timer.SetDuration(TimeSpan.FromSeconds(30));
+		Timer.SetDuration(TimeSpan.FromSeconds(durationSeconds));
 		Timer.Restart();
 	}
 
