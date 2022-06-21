@@ -48,7 +48,7 @@ public class Timer
 
 	public Timer ()
 	{
-		dispatcherTimer = new()
+		dispatcherTimer = new(DispatcherPriority.Normal)
 		{
 			Interval = new TimeSpan(0, 0, 0, 0, UpdateIntervalMilliseconds)
 		};
