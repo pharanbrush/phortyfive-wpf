@@ -5,7 +5,7 @@ using System.Windows.Threading;
 namespace PhortyFiveSeconds;
 public class Timer
 {
-	readonly TimeSpan UpdateInterval = TimeSpan.FromMilliseconds(400);
+	readonly TimeSpan UpdateInterval = TimeSpan.FromMilliseconds(500);
 
 	readonly DispatcherTimer dispatcherTimer;
 
