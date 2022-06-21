@@ -63,13 +63,15 @@ public partial class MainWindow : Window
 		};
 
 		Circulator.OnCurrentNumberChanged += UpdateCurrentImage;
-		Circulator.OnCurrentNumberChanged += PlaySound;
 
 		Toaster = new(ToastLabel);
 		ImageView = new(MainImageView, ImageFileNameLabel);
 		ImageView.HandleClipboardToast(Toaster.Toast);
 
 		soundPlayer.LoadAsync();
+		Circulator.OnCurrentNumberChanged += PlaySound;
+		Timer.PlayPauseChanged += PlaySound;
+		Timer.DurationChanged += PlaySound;
 
 		TimeBar.Maximum = TimerIndicatorMaximum;
 		TimerSettingsUI.InitializeMenuChoices(SettingsButton, durationMenuItems, SetTimerDurationSeconds, () => SetTimerSettingsPanelVisible(true));
