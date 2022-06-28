@@ -60,6 +60,7 @@
 		<Image Name="MainImageView" 
 			 Grid.Row="1"
 			 Stretch="Uniform"
+			 RenderOptions.BitmapScalingMode="HighQuality"
 			 />
 
 		<Label Name="VersionNumberOverlayLabel"
