@@ -13,5 +13,6 @@ namespace PhortyFiveSeconds
 	/// </summary>
 	public partial class App : Application
 	{
+		static public string AssemblyVersionNumber => System.Reflection.Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? string.Empty;
 	}
 }

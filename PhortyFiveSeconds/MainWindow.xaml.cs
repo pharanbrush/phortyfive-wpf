@@ -20,11 +20,10 @@ public partial class MainWindow : Window
 	readonly TimerSettingsUI TimerSettingsUI = new();
 	readonly Toaster Toaster;
 	readonly SoundPlayer soundPlayer = new(Properties.Resources.ClackSound);
+	AboutWindow AboutWindow;
 
 	bool IsImageSetReady => Circulator.IsPopulated;
 	static Brush? GetBrush (string key) => Application.Current.Resources[key] as Brush;
-
-	static string AssemblyVersionNumber => System.Reflection.Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? string.Empty;
 
 	IEnumerable<Button> ImageSetButtons
 	{
@@ -42,12 +41,12 @@ public partial class MainWindow : Window
 		InitializeComponent();
 		SetTimerSettingsPanelVisible(false);
 
-		VersionNumberOverlayLabel.Content = AssemblyVersionNumber;
+		VersionNumberOverlayLabel.Content = App.AssemblyVersionNumber;
 
 		Timer.PlayPauseChanged += UpdatePlayPauseButtonState;
 		Timer.PlayPauseChanged += UpdateTimerPlayPausedIndicator;
 		Timer.Restarted += UpdateTimerIndicatorTick;
-		Timer.Tick += UpdateTimerIndicatorTick;
+		Timer.VisualUpdate += UpdateTimerIndicatorTick;
 		Timer.Elapsed += TryMoveNext;
 		Timer.DurationChanged += UpdateTimerDurationIndicators;
 		Timer.SetDuration(TimeSpan.FromSeconds(30));
@@ -74,6 +73,12 @@ public partial class MainWindow : Window
 		Timer.DurationChanged += PlaySound;
 
 		TimeBar.Maximum = TimerIndicatorMaximum;
+
+		var aboutItem = new MenuItem { Header = "About...", };
+		aboutItem.Click += (_, _) => TryOpenAboutWindow();
+		TimerSettingsUI.AddMenuItem(aboutItem);
+		TimerSettingsUI.AddMenuItem(new Separator());
+
 		TimerSettingsUI.InitializeMenuChoices(SettingsButton, durationMenuItems, SetTimerDurationSeconds, () => SetTimerSettingsPanelVisible(true));
 		NonEditableTimerLabel.MouseDown += (_, mouseEvent) => {
 			mouseEvent.Handled = true;
@@ -188,6 +193,16 @@ public partial class MainWindow : Window
 		UpdateInteractibleState();
 	}
 
+	void TryOpenAboutWindow ()
+	{
+		this.AboutWindow ??= new AboutWindow()
+		{
+			Owner = this,
+		};
+
+		AboutWindow.ShowDialog();
+	}
+
 	void TryStartNewSet ()
 	{
 		if (!FileList.IsPopulated)
@@ -242,7 +257,8 @@ public partial class MainWindow : Window
 		{
 			SecondsInputTextbox.Focus();
 			SecondsInputTextbox.SelectAll();
-		} else
+		}
+		else
 		{
 			SecondsInputTextbox.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
 		}
