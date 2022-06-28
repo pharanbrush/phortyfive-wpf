@@ -231,7 +231,14 @@ public partial class MainWindow : Window
 
 	void UpdateSettingsTextBlock ()
 	{
-		ImagesCountLabel.Content = $"{FileList.Count} images";
+		int count = FileList.Count;
+		if (count <= 0)
+		{
+			ImagesCountLabel.Content = "No images loaded";
+			return;
+		}
+
+		ImagesCountLabel.Content = $"{count} images";
 	}
 
 	void UpdateTimerDurationIndicators ()
