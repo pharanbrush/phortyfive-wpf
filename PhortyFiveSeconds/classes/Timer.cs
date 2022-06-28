@@ -5,12 +5,14 @@ using System.Windows.Threading;
 namespace PhortyFiveSeconds;
 public class Timer
 {
-	readonly TimeSpan UpdateInterval = TimeSpan.FromMilliseconds(500);
+	static readonly TimeSpan TickInterval = TimeSpan.FromMilliseconds(100);
+	static readonly TimeSpan VisualUpdateInterval = TimeSpan.FromMilliseconds(500);
 
 	readonly DispatcherTimer dispatcherTimer;
 
 	TimeSpan TimeLeft { get; set; } = TimeSpan.FromSeconds(30);
 	TimeSpan Duration { get; set; } = TimeSpan.FromSeconds(30);
+	TimeSpan VisualUpdateTimeLeft { get; set; } = VisualUpdateInterval;
 
 	DateTime lastTime;
 	bool elapsedThisRound = false;
@@ -37,6 +39,7 @@ public class Timer
 	public event Action? Elapsed;
 	public event Action? Restarted;
 	public event Action? DurationChanged;
+	public event Action? VisualUpdate;
 
 	public int DurationSeconds => (int)Duration.TotalSeconds;
 	public double FractionLeft => (TimeLeft.TotalMilliseconds / Duration.TotalMilliseconds);
@@ -49,7 +52,7 @@ public class Timer
 	{
 		dispatcherTimer = new(DispatcherPriority.Normal)
 		{
-			Interval = UpdateInterval
+			Interval = TickInterval
 		};
 		dispatcherTimer.Tick += TimerTickEventHandler;
 
@@ -69,6 +72,7 @@ public class Timer
 		dispatcherTimer.Start();
 		lastTime = DateTime.Now;
 		TimeLeft = Duration;
+		VisualUpdateTimeLeft = VisualUpdateInterval;
 		elapsedThisRound = false;
 		Restarted?.Invoke();
 	}
@@ -79,7 +83,14 @@ public class Timer
 		if (IsActive)
 		{
 			UpdateMillisecondsLeft();
-			if (!elapsedThisRound && TimeLeft.TotalMilliseconds < 0)
+
+			if (VisualUpdateTimeLeft < TimeSpan.Zero)
+			{
+				VisualUpdateTimeLeft = VisualUpdateInterval;
+				VisualUpdate?.Invoke();
+			}
+
+			if (!elapsedThisRound && TimeLeft < TimeSpan.Zero)
 			{
 				elapsedThisRound = true;
 				Elapsed?.Invoke();
@@ -92,7 +103,9 @@ public class Timer
 	{
 		var now = DateTime.Now;
 		var deltaTime = now - lastTime;
+
 		TimeLeft -= deltaTime;
+		VisualUpdateTimeLeft -= deltaTime;
 
 		lastTime = now;
 	}

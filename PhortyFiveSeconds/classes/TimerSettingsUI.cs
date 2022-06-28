@@ -19,7 +19,6 @@ internal class TimerSettingsUI
 		this.OnChooseCustom = onChooseCustom;
 
 		var menuItems = menu.Items;
-		menuItems.Clear();
 
 		menuItems.Add(new MenuItem { Header = "Timer duration", IsEnabled = false, });
 		menuItems.Add(new Separator());
@@ -63,6 +62,11 @@ internal class TimerSettingsUI
 			menuItem.IsEnabled = !isChosen;
 			menuItem.IsChecked = isChosen;
 		}
+	}
+
+	internal void AddMenuItem (object menuItem)
+	{
+		menu.Items.Add(menuItem);
 	}
 
 	void AddDurationItem (int durationSeconds, string text)
