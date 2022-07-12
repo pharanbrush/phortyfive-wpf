@@ -42,7 +42,14 @@
 		<KeyBinding Key="O" Modifiers="Ctrl" Command="{StaticResource OpenFolderCommand}" />
 	</Window.InputBindings>
 
-	<Grid Name="MainGrid" Focusable="True">
+	<Grid Name="MainGrid"
+		Focusable="True"
+		
+		Background="White"
+		Drop="DropPanel_Drop"
+		AllowDrop="True"
+		>
+
 		<Grid.RowDefinitions>
 			<RowDefinition Height="Auto" />
 			<RowDefinition Height="*" />

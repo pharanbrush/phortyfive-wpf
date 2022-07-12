@@ -133,6 +133,16 @@ public partial class MainWindow : Window
 	void PlayPauseCommand (object sender, RoutedEventArgs e) => DoIfImageSetIsLoaded(Timer.TogglePlayPause);
 	void NextImageCommand (object sender, RoutedEventArgs e) => TryMoveNext();
 
+	void DropPanel_Drop (object sender, DragEventArgs e)
+	{
+		if (e.Data.GetDataPresent(DataFormats.FileDrop))
+		{
+			string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+
+			UserAppendFiles(files);
+		}
+	}
+
 	void SecondsInputTextBox_Enter ()
 	{
 		var userInputString = SecondsInputTextbox.Text;
@@ -184,28 +194,6 @@ public partial class MainWindow : Window
 		});
 	}
 
-	void UserOpenFiles ()
-	{
-		if (FileUtilities.OpenPickerForImages(out IEnumerable<string> filePaths))
-		{
-			LoadFilesAndStartNewSet(filePaths);
-		}
-	}
-
-	void LoadFilesAndStartNewSet (IEnumerable<string> filePaths)
-	{
-		var imagePaths = FileUtilities.EnumerateImages(filePaths);
-		FileList.Load(imagePaths);
-		Timer.Restart();
-
-		if (FileList.IsPopulated)
-		{
-			TryStartNewSet();
-		}
-
-		UpdateInteractibleState();
-	}
-
 	void TryOpenAboutWindow ()
 	{
 		// Don't cache. You can't reopen a window once it's closed by the user.
@@ -216,8 +204,33 @@ public partial class MainWindow : Window
 		aboutWindow.ShowDialog();
 	}
 
+	void UserOpenFiles ()
+	{
+		if (FileUtilities.OpenPickerForImages(out IEnumerable<string> filePaths))
+		{
+			LoadFilesAndStartNewSet(filePaths);
+		}
+	}
+
+	void UserAppendFiles (string[] files)
+	{
+		int filesAppended = FileList.Append(FileUtilities.EnumerateImages(files));
+		Toaster.Toast($"{filesAppended} {(filesAppended == 1 ? "image" : "images")} added.");
+		if (filesAppended <= 0) return;
+		TryStartNewSet();
+	}
+
+	void LoadFilesAndStartNewSet (IEnumerable<string> filePaths)
+	{
+		var imagePaths = FileUtilities.EnumerateImages(filePaths);
+		FileList.Load(imagePaths);
+		TryStartNewSet();
+	}
+
 	void TryStartNewSet ()
 	{
+		Timer.Restart();
+
 		if (!FileList.IsPopulated)
 		{
 			Circulator.Clear();
@@ -228,6 +241,9 @@ public partial class MainWindow : Window
 		Timer.IsActive = true;
 		DismissTips();
 		UpdateSettingsTextBlock();
+
+		UpdateInteractibleState();
+	}
 	}
 
 	void UpdateTimerIndicatorTick ()

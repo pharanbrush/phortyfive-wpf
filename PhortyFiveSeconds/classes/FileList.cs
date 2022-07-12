@@ -28,12 +28,23 @@ internal class FileList
 	public void Load (IEnumerable<string> filePaths)
 	{
 		files.Clear();
+		Append(filePaths);
+	}
+
+	public int Append (IEnumerable<string> filePaths)
+	{
+		int filesAppended = 0;
 		foreach (var filePath in filePaths)
 		{
-			files.Add(new FileData {
+			
+			files.Add(new FileData
+			{
 				fileName = Path.GetFileName(filePath),
 				filePath = filePath,
 			});
+			filesAppended++;
 		}
+
+		return filesAppended;
 	}
 }
