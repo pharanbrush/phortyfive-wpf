@@ -146,7 +146,7 @@ public partial class MainWindow : Window
 	void NextImageCommand (object sender, RoutedEventArgs e) => TryMoveNext();
 	void ToggleBottomBarCommand (object sender, ExecutedRoutedEventArgs e) => ToggleBottomBar();
 
-	void DropPanel_Drop (object sender, DragEventArgs e)
+	void DropFilesCommand (object sender, DragEventArgs e)
 	{
 		if (e.Data.GetDataPresent(DataFormats.FileDrop))
 		{
@@ -361,6 +361,8 @@ public partial class MainWindow : Window
 		{
 			button.IsEnabled = IsImageSetReady;
 		}
+
+		DropHintOverlay.Visibility = Visibility.Collapsed;
 	}
 
 	void PlaySound ()
@@ -387,5 +389,15 @@ public partial class MainWindow : Window
 	void ToggleBottomBar ()
 	{
 		SetBottomBarActive(CollapsedBottomBar.Visibility == Visibility.Visible);
+	}
+
+	void DropTarget_DragEnter (object sender, DragEventArgs e)
+	{
+		DropHintOverlay.Visibility = Visibility.Visible;
+	}
+
+	void DropTarget_DragLeave (object sender, DragEventArgs e)
+	{
+		DropHintOverlay.Visibility = Visibility.Collapsed;
 	}
 }

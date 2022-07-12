@@ -50,7 +50,11 @@
 
 	<Grid Name="MainGrid"
 		Background="White"
-		Drop="DropPanel_Drop"
+		
+		Drop="DropFilesCommand"
+		DragEnter="DropTarget_DragEnter"
+		DragLeave="DropTarget_DragLeave"
+		
 		AllowDrop="True"
 		>
 
@@ -79,6 +83,38 @@
 			 Foreground="#3F000000"
 			 HorizontalAlignment="Right"
 			 VerticalAlignment="Top">v 0.5.0</Label>
+
+
+		<StackPanel Name="DropHintOverlay"
+				Visibility="Collapsed"
+				
+				Grid.Row="1"
+				HorizontalAlignment="Stretch"
+				VerticalAlignment="Center"
+				Background="#66000000"
+				Orientation="Vertical"
+				Height="Auto" Width="Auto">
+			<StackPanel.Effect>
+				<DropShadowEffect ShadowDepth="0" BlurRadius="5" Direction="0" Opacity="0.5"/>
+			</StackPanel.Effect>
+
+			<StackPanel Orientation="Vertical" Margin="100,100,100,100">
+				<Label HorizontalAlignment="Center" FontSize="48" FontWeight="Bold" Foreground="White" FontFamily="{DynamicResource ButtonSymbolFont}">&#xEB9F;</Label>
+				<Label HorizontalAlignment="Center" FontSize="36" FontWeight="Bold" Foreground="White">Drop files here</Label>
+				<TextBlock 
+					HorizontalAlignment="Center"
+					FontSize="18"
+					Foreground="White" 
+					TextAlignment="Center"
+					TextWrapping="Wrap"
+					>
+					<Run>Images will be added to the current set.</Run>
+					<LineBreak/>
+					<Run>Unsupported files will be ignored.</Run>
+				</TextBlock>
+			</StackPanel>
+
+		</StackPanel>
 
 		<StackPanel Name="StartingTip"
 				Grid.Row="1"
