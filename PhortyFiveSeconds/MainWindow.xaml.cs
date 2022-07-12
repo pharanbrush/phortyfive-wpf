@@ -316,8 +316,7 @@ public partial class MainWindow : Window
 		}
 		else
 		{
-			FocusManager.SetFocusedElement(this, null);
-			Keyboard.ClearFocus();
+			FocusManager.SetFocusedElement(this, this);
 		}
 	}
 
