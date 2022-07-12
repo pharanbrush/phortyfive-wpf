@@ -20,7 +20,6 @@ public partial class MainWindow : Window
 	readonly TimerSettingsUI TimerSettingsUI = new();
 	readonly Toaster Toaster;
 	readonly SoundPlayer soundPlayer = new(Properties.Resources.ClackSound);
-	AboutWindow AboutWindow;
 
 	bool IsImageSetReady => Circulator.IsPopulated;
 	static Brush? GetBrush (string key) => Application.Current.Resources[key] as Brush;
@@ -195,12 +194,12 @@ public partial class MainWindow : Window
 
 	void TryOpenAboutWindow ()
 	{
-		this.AboutWindow ??= new AboutWindow()
+		// Don't cache. You can't reopen a window once it's closed by the user.
+		var aboutWindow = new AboutWindow
 		{
 			Owner = this,
 		};
-
-		AboutWindow.ShowDialog();
+		aboutWindow.ShowDialog();
 	}
 
 	void TryStartNewSet ()
