@@ -79,18 +79,22 @@ public partial class MainWindow : Window
 		Timer.DurationChanged += PlaySound;
 
 		TimeBar.Maximum = TimerIndicatorMaximum;
+		TimeBarCollapsed.Maximum = TimerIndicatorMaximum;
+		ExpandBottomBarButton.MakeTooltipImmediate();
 
 		var aboutItem = new MenuItem { Header = "About...", };
 		aboutItem.Click += (_, _) => TryOpenAboutWindow();
 
 		alwaysOnTopMenuItem = new MenuItem { Header = "Always on top", };
 		alwaysOnTopMenuItem.Click += (_, _) => TryToggleAlwaysOnTop();
+		var hideBottomBarMenuItem = new MenuItem { Header = "Hide bottom bar (H)", };
+		hideBottomBarMenuItem.Click += (_, _) => SetBottomBarActive(false);
 
 		TimerSettingsUI.AddMenuItem(aboutItem);
 		TimerSettingsUI.AddMenuItem(new Separator());
 		TimerSettingsUI.AddMenuItem(alwaysOnTopMenuItem);
+		TimerSettingsUI.AddMenuItem(hideBottomBarMenuItem);
 		TimerSettingsUI.AddMenuItem(new Separator());
-
 
 		TimerSettingsUI.InitializeMenuChoices(SettingsButton, durationMenuItems, SetTimerDurationSeconds, () => SetTimerSettingsPanelVisible(true));
 		NonEditableTimerLabel.MouseDown += (_, mouseEvent) => {
@@ -132,6 +136,7 @@ public partial class MainWindow : Window
 	void PreviousImageCommand (object sender, RoutedEventArgs e) => TryMovePrevious();
 	void PlayPauseCommand (object sender, RoutedEventArgs e) => DoIfImageSetIsLoaded(Timer.TogglePlayPause);
 	void NextImageCommand (object sender, RoutedEventArgs e) => TryMoveNext();
+	void ToggleBottomBarCommand (object sender, ExecutedRoutedEventArgs e) => ToggleBottomBar();
 
 	void DropPanel_Drop (object sender, DragEventArgs e)
 	{
@@ -244,11 +249,18 @@ public partial class MainWindow : Window
 
 		UpdateInteractibleState();
 	}
+
+	void SetBottomBarActive (bool active)
+	{
+		CollapsedBottomBar.Visibility = active ? Visibility.Collapsed : Visibility.Visible;
+		ActiveBottomBar.Visibility = active ? Visibility.Visible : Visibility.Collapsed;
 	}
 
 	void UpdateTimerIndicatorTick ()
 	{
-		TimeBar.Value = Timer.FractionLeft * TimerIndicatorMaximum;
+		double timebarValue = Timer.FractionLeft * TimerIndicatorMaximum;
+		TimeBar.Value = timebarValue;
+		TimeBarCollapsed.Value = timebarValue;
 	}
 
 	void UpdateCurrentImage ()
@@ -315,6 +327,7 @@ public partial class MainWindow : Window
 	{
 		var color = Timer.IsActive ? GetBrush("TimeBarActiveColor") : GetBrush("TimeBarPausedColor");
 		TimeBar.Foreground = color;
+		TimeBarCollapsed.Foreground = color;
 	}
 
 	void UpdatePlayPauseButtonState ()
@@ -345,5 +358,14 @@ public partial class MainWindow : Window
 	void PlaySound ()
 	{
 		soundPlayer.Play();
+
+	private void ExpandBottomBarButton_MouseDown (object sender, MouseButtonEventArgs e)
+	{
+		SetBottomBarActive(true);
+	}
+
+	void ToggleBottomBar ()
+	{
+		SetBottomBarActive(CollapsedBottomBar.Visibility == Visibility.Visible);
 	}
 }
