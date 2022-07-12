@@ -21,7 +21,9 @@ public partial class MainWindow : Window
 	readonly Toaster Toaster;
 	readonly SoundPlayer soundPlayer = new(Properties.Resources.ClackSound);
 	readonly MenuItem alwaysOnTopMenuItem;
+	readonly MenuItem soundMenuItem;
 
+	bool IsSoundEnabled { get; set; } = true;
 	bool IsImageSetReady => Circulator.IsPopulated;
 	static Brush? GetBrush (string key) => Application.Current.Resources[key] as Brush;
 
@@ -87,12 +89,18 @@ public partial class MainWindow : Window
 
 		alwaysOnTopMenuItem = new MenuItem { Header = "Always on top", };
 		alwaysOnTopMenuItem.Click += (_, _) => TryToggleAlwaysOnTop();
+		soundMenuItem = new MenuItem { Header = "Sounds", };
+		soundMenuItem.Click += (_, _) => TryToggleSound();
+
+		SetSoundActive(true);
+
 		var hideBottomBarMenuItem = new MenuItem { Header = "Hide bottom bar (H)", };
 		hideBottomBarMenuItem.Click += (_, _) => SetBottomBarActive(false);
 
 		TimerSettingsUI.AddMenuItem(aboutItem);
 		TimerSettingsUI.AddMenuItem(new Separator());
 		TimerSettingsUI.AddMenuItem(alwaysOnTopMenuItem);
+		TimerSettingsUI.AddMenuItem(soundMenuItem);
 		TimerSettingsUI.AddMenuItem(hideBottomBarMenuItem);
 		TimerSettingsUI.AddMenuItem(new Separator());
 
@@ -357,7 +365,19 @@ public partial class MainWindow : Window
 
 	void PlaySound ()
 	{
-		soundPlayer.Play();
+		if (IsSoundEnabled) soundPlayer.Play();
+	}
+
+	void TryToggleSound ()
+	{
+		SetSoundActive(!IsSoundEnabled);
+	}
+
+	void SetSoundActive (bool active)
+	{
+		IsSoundEnabled = active;
+		soundMenuItem.IsChecked = IsSoundEnabled;
+	}
 
 	private void ExpandBottomBarButton_MouseDown (object sender, MouseButtonEventArgs e)
 	{
