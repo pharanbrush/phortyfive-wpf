@@ -20,6 +20,7 @@ public partial class MainWindow : Window
 	readonly TimerSettingsUI TimerSettingsUI = new();
 	readonly Toaster Toaster;
 	readonly SoundPlayer soundPlayer = new(Properties.Resources.ClackSound);
+	readonly MenuItem alwaysOnTopMenuItem;
 
 	bool IsImageSetReady => Circulator.IsPopulated;
 	static Brush? GetBrush (string key) => Application.Current.Resources[key] as Brush;
@@ -33,6 +34,12 @@ public partial class MainWindow : Window
 			yield return PrevButton;
 			yield return RestartTimerButton;
 		}
+	}
+
+	bool IsAlwaysOnTop
+	{
+		get => this.Topmost;
+		set => this.Topmost = value;
 	}
 
 	public MainWindow ()
@@ -75,8 +82,15 @@ public partial class MainWindow : Window
 
 		var aboutItem = new MenuItem { Header = "About...", };
 		aboutItem.Click += (_, _) => TryOpenAboutWindow();
+
+		alwaysOnTopMenuItem = new MenuItem { Header = "Always on top", };
+		alwaysOnTopMenuItem.Click += (_, _) => TryToggleAlwaysOnTop();
+
 		TimerSettingsUI.AddMenuItem(aboutItem);
 		TimerSettingsUI.AddMenuItem(new Separator());
+		TimerSettingsUI.AddMenuItem(alwaysOnTopMenuItem);
+		TimerSettingsUI.AddMenuItem(new Separator());
+
 
 		TimerSettingsUI.InitializeMenuChoices(SettingsButton, durationMenuItems, SetTimerDurationSeconds, () => SetTimerSettingsPanelVisible(true));
 		NonEditableTimerLabel.MouseDown += (_, mouseEvent) => {
@@ -268,6 +282,17 @@ public partial class MainWindow : Window
 		{
 			SecondsInputTextbox.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
 		}
+	}
+
+	void TryToggleAlwaysOnTop ()
+	{
+		TrySetAlwaysOnTop(!IsAlwaysOnTop);
+	}
+
+	void TrySetAlwaysOnTop (bool alwaysOnTop)
+	{
+		IsAlwaysOnTop = alwaysOnTop;
+		alwaysOnTopMenuItem.IsChecked = IsAlwaysOnTop;
 	}
 
 	void UpdateTimerPlayPausedIndicator ()
