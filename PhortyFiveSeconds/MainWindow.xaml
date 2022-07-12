@@ -49,8 +49,6 @@
 	</Window.InputBindings>
 
 	<Grid Name="MainGrid"
-		Focusable="True"
-		
 		Background="White"
 		Drop="DropPanel_Drop"
 		AllowDrop="True"

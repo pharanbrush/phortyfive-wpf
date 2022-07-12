@@ -316,7 +316,8 @@ public partial class MainWindow : Window
 		}
 		else
 		{
-			SecondsInputTextbox.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
+			FocusManager.SetFocusedElement(this, null);
+			Keyboard.ClearFocus();
 		}
 	}
 
