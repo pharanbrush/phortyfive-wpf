@@ -25,7 +25,8 @@ internal class WPFImageView
 	{
 
 		ImageElement = imageElement;
-		ImageElement.MouseDown += (_, _) => CycleStretchMode();
+		ImageElement.Stretch = Stretch.Uniform;
+		//ImageElement.MouseDown += (_, _) => CycleStretchMode();
 
 		FileNameLabel = fileNameLabel;
 
