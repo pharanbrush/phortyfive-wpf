@@ -20,8 +20,6 @@ public partial class MainWindow : Window
 	readonly TimerSettingsUI TimerSettingsUI = new();
 	readonly Toaster Toaster;
 	readonly SoundPlayer soundPlayer = new(Properties.Resources.ClackSound);
-	readonly MenuItem alwaysOnTopMenuItem;
-	readonly MenuItem soundMenuItem;
 
 	bool IsSoundEnabled { get; set; } = true;
 	bool IsImageSetReady => Circulator.IsPopulated;
@@ -35,6 +33,23 @@ public partial class MainWindow : Window
 			yield return NextButton;
 			yield return PrevButton;
 			yield return RestartTimerButton;
+		}
+	}
+
+	IEnumerable<FrameworkElement> TooltipElements
+	{
+		get
+		{
+			yield return HideBottomBarMiniButton;
+			yield return ExpandBottomBarMiniButton;
+			yield return SoundToggle;
+			yield return AlwaysOnTopToggle;
+			yield return AboutButton;
+
+			foreach (var button in ImageSetButtons)
+			{
+				yield return button;
+			}
 		}
 	}
 
@@ -82,27 +97,21 @@ public partial class MainWindow : Window
 
 		TimeBar.Maximum = TimerIndicatorMaximum;
 		TimeBarCollapsed.Maximum = TimerIndicatorMaximum;
-		ExpandBottomBarButton.MakeTooltipImmediate();
 
-		var aboutItem = new MenuItem { Header = "About...", };
-		aboutItem.Click += (_, _) => TryOpenAboutWindow();
 
-		alwaysOnTopMenuItem = new MenuItem { Header = "Always on top", };
-		alwaysOnTopMenuItem.Click += (_, _) => TryToggleAlwaysOnTop();
-		soundMenuItem = new MenuItem { Header = "Sounds", };
-		soundMenuItem.Click += (_, _) => TryToggleSound();
+		foreach (var element in TooltipElements)
+		{
+			element.MakeTooltipImmediate();
+		}
 
 		SetSoundActive(true);
 
-		var hideBottomBarMenuItem = new MenuItem { Header = "Hide bottom bar (H)", };
-		hideBottomBarMenuItem.Click += (_, _) => SetBottomBarActive(false);
-
-		TimerSettingsUI.AddMenuItem(aboutItem);
-		TimerSettingsUI.AddMenuItem(new Separator());
-		TimerSettingsUI.AddMenuItem(alwaysOnTopMenuItem);
-		TimerSettingsUI.AddMenuItem(soundMenuItem);
-		TimerSettingsUI.AddMenuItem(hideBottomBarMenuItem);
-		TimerSettingsUI.AddMenuItem(new Separator());
+		HideBottomBarMiniButton.MouseDown += (_, _) => SetBottomBarActive(false);
+		AlwaysOnTopToggle.MouseDown += (_, _) => TryToggleAlwaysOnTop();
+		SoundToggle.MouseDown += (_, _) => TryToggleSound();
+		AboutButton.MouseDown += (_, _) => TryOpenAboutWindow();
+		HelpButton.MouseDown += (_, _) => TryToggleHelpPanel();
+		HelpOverlayPanel.MouseDown += (_, _) => SetHelpPanelActive(false);
 
 		TimerSettingsUI.InitializeMenuChoices(SettingsButton, durationMenuItems, SetTimerDurationSeconds, () => SetTimerSettingsPanelVisible(true));
 		NonEditableTimerLabel.MouseDown += (_, mouseEvent) => {
@@ -128,11 +137,6 @@ public partial class MainWindow : Window
 		OpenFolderButton.MakeTooltipImmediate();
 		OpenFolderButton.SetTooltipPlacement(PlacementMode.Top);
 
-		foreach (var button in ImageSetButtons)
-		{
-			button.MakeTooltipImmediate();
-		}
-
 		UpdatePlayPauseButtonState();
 		UpdateTimerDurationIndicators();
 		UpdateInteractibleState();
@@ -145,6 +149,7 @@ public partial class MainWindow : Window
 	void PlayPauseCommand (object sender, RoutedEventArgs e) => DoIfImageSetIsLoaded(Timer.TogglePlayPause);
 	void NextImageCommand (object sender, RoutedEventArgs e) => TryMoveNext();
 	void ToggleBottomBarCommand (object sender, ExecutedRoutedEventArgs e) => ToggleBottomBar();
+	void ToggleHelpCommand (object sender, ExecutedRoutedEventArgs e) => TryToggleHelpPanel();
 
 	void DropFilesCommand (object sender, DragEventArgs e)
 	{
@@ -154,6 +159,8 @@ public partial class MainWindow : Window
 
 			UserAppendFiles(files);
 		}
+
+		DropHintOverlay.Visibility = Visibility.Collapsed;
 	}
 
 	void SecondsInputTextBox_Enter ()
@@ -328,7 +335,10 @@ public partial class MainWindow : Window
 	void TrySetAlwaysOnTop (bool alwaysOnTop)
 	{
 		IsAlwaysOnTop = alwaysOnTop;
-		alwaysOnTopMenuItem.IsChecked = IsAlwaysOnTop;
+
+		const string PinnedSymbol = "\uE842";
+		const string UnpinnedSymbol = "\uE718";
+		AlwaysOnTopToggle.Content = IsAlwaysOnTop ? PinnedSymbol : UnpinnedSymbol;
 	}
 
 	void UpdateTimerPlayPausedIndicator ()
@@ -378,7 +388,10 @@ public partial class MainWindow : Window
 	void SetSoundActive (bool active)
 	{
 		IsSoundEnabled = active;
-		soundMenuItem.IsChecked = IsSoundEnabled;
+
+		const string MutedSymbol = "\uE74F";
+		const string SoundEnabledSymbol = "\uE994";
+		SoundToggle.Content = IsSoundEnabled ? SoundEnabledSymbol : MutedSymbol;
 	}
 
 	private void ExpandBottomBarButton_MouseDown (object sender, MouseButtonEventArgs e)
@@ -399,5 +412,15 @@ public partial class MainWindow : Window
 	void DropTarget_DragLeave (object sender, DragEventArgs e)
 	{
 		DropHintOverlay.Visibility = Visibility.Collapsed;
+	}
+
+	void TryToggleHelpPanel ()
+	{
+		SetHelpPanelActive(HelpOverlayPanel.Visibility == Visibility.Collapsed);
+	}
+
+	void SetHelpPanelActive (bool active)
+	{
+		HelpOverlayPanel.Visibility = active ? Visibility.Visible : Visibility.Collapsed;
 	}
 }
