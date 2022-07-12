@@ -84,6 +84,99 @@
 			 HorizontalAlignment="Right"
 			 VerticalAlignment="Top">v 0.5.0</Label>
 
+		<StackPanel Name="HelpOverlayPanel"
+				
+				Visibility="Collapsed"
+				
+				Grid.Row="1"
+				HorizontalAlignment="Stretch"
+				VerticalAlignment="Center"
+				Background="#B2000000"
+				Orientation="Vertical"
+				Height="Auto" Width="Auto"
+				
+				TextElement.Foreground="White"
+				TextBlock.Foreground="White"
+				>
+
+			<StackPanel Orientation="Vertical" Margin="100,50,100,120" HorizontalAlignment="Center">
+				<StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+					<Label HorizontalAlignment="Center" FontSize="36" FontWeight="Bold" Foreground="White" FontFamily="{DynamicResource ButtonSymbolFont}" VerticalAlignment="Center" Margin="0,0,0,-10">&#xE765;</Label>
+					<Label HorizontalAlignment="Center" FontSize="24" FontWeight="Bold" Foreground="White">Keyboard Shortcuts</Label>
+				</StackPanel>
+
+				<Border CornerRadius="10,10,10,10" Background="#7F000000" Margin="0,5,0,20" >
+					<Grid TextBlock.FontSize="16" Margin="20, 30, 20 30" Width="500">
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="*"/>
+							<ColumnDefinition Width="*"/>
+						</Grid.ColumnDefinitions>
+
+						<StackPanel Grid.Column="0" Orientation="Vertical" Margin="0,0,20,0">
+							<Grid Margin="0,0,0,5">
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="*"/>
+									<ColumnDefinition Width="*"/>
+								</Grid.ColumnDefinitions>
+
+								<TextBlock Grid.Column="0" Text="Open files..." />
+								<StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+									<components:KeyTextBlock Text="Ctrl" />
+									<TextBlock Text="+" />
+									<components:KeyTextBlock Text="O" />
+								</StackPanel>
+							</Grid>
+
+							<TextBlock />
+							<components:HotkeyListItem
+								CommandName="Next image"
+								Key="J"
+								/>
+
+							<components:HotkeyListItem
+								CommandName="Previous image"
+								Key="K"
+								/>
+							<TextBlock />
+							<components:HotkeyListItem
+								CommandName="Play/Pause"
+								Key="P"
+								/>
+							<components:HotkeyListItem
+								CommandName="Restart timer"
+								Key="R"
+								/>
+						</StackPanel>
+						<StackPanel Grid.Column="1" Orientation="Vertical">
+							<components:HotkeyListItem
+								CommandName="Toggle bottom bar"
+								Key="H"
+								/>
+
+							<components:HotkeyListItem
+								CommandName="Toggle help"
+								Key="F1"
+								/>
+						</StackPanel>
+					</Grid>
+					
+					
+					
+				</Border>
+
+				<TextBlock 
+					HorizontalAlignment="Center"
+					FontSize="18"
+					Foreground="White" 
+					TextAlignment="Center"
+					TextWrapping="Wrap" VerticalAlignment="Center"
+					>
+					
+					<Run FontFamily="{DynamicResource ButtonSymbolFont}" FontSize="20">&#xE8DA;</Run> <Run>You can also add images to a set using drag and drop.</Run>
+				</TextBlock>
+			</StackPanel>
+
+		</StackPanel>
 
 		<StackPanel Name="DropHintOverlay"
 				Visibility="Collapsed"
