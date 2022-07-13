@@ -39,18 +39,32 @@ internal class TimerSettingsUI
 
 		menu.PlacementTarget = settingsButton;
 		menu.Placement = System.Windows.Controls.Primitives.PlacementMode.Top;
+
+		//TODO: How do I make this close on open menu? It seems to make the check on mouse up, but mouse down already closes the menu so it opens it again.
 		settingsButton.Click += (_, _) => menu.IsOpen = true;
+	}
+
+	bool TryParseDurationFromString (string durationString, out int duration)
+	{
+		const int MinimumDuration = 5;
+		const int MaximumDuration = 30 * 60;
+		if (int.TryParse(durationString, out int tempDuration))
+		{
+			duration = Math.Clamp(tempDuration, MinimumDuration, MaximumDuration);
+			return true;
+		}
+
+		duration = -1;
+		return false;
 	}
 
 	internal bool TrySetDuration (string durationString)
 	{
-		if (int.TryParse(durationString, out int duration))
+		if (TryParseDurationFromString(durationString, out int duration))
 		{
-			duration = Math.Clamp(duration, 5, 30 * 60);
 			setDurationHandler?.Invoke(duration);
 			return true;
 		}
-
 		return false;
 	}
 
