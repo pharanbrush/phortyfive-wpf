@@ -401,8 +401,8 @@
 				<Label Name="HideBottomBarMiniButton"
 					 Foreground="#3F000000"
 					 ToolTip="Hide bottom bar (H)"
-					 VerticalAlignment="Bottom"
-					 FontSize="14">&#xE96E;</Label>
+					 VerticalContentAlignment="Bottom"
+					 FontSize="14" Height="48">&#xE96E;</Label>
 
 			</StackPanel>
 
