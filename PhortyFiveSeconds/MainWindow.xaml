@@ -78,13 +78,24 @@
 			<RowDefinition Height="Auto" />
 		</Grid.RowDefinitions>
 
-		<Label Foreground="{DynamicResource ImageFileNameLabelColor}" Grid.Row="0" Name="ImageFileNameLabel" Content="." HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="10" Cursor="IBeam" >
-			<Label.ToolTip>
-				<ToolTip>Double-click to copy</ToolTip>
-			</Label.ToolTip>
-		</Label>
+		<Label Name="ImageFileNameLabel" Grid.Row="0" 
+			 Foreground="{DynamicResource ImageFileNameLabelColor}"
+			 HorizontalAlignment="Center"
+			 VerticalAlignment="Top"
+			 FontSize="10"
+			 Cursor="IBeam"
+			 
+			 Content="."
+			 
+			 ToolTip="Double-click to copy" />
 
-		<Label Grid.Row="0" Name="ToastLabel" Content="." HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="9" Background="#FFAFEFFF" Visibility="Hidden" />
+		<Label Name="ToastLabel" Grid.Row="0"
+			 Content="."
+			 HorizontalAlignment="Center"
+			 VerticalAlignment="Top"
+			 FontSize="9"
+			 Background="#FFAFEFFF"
+			 Visibility="Hidden" />
 
 		<Image Name="MainImageView" 
 			 Grid.Row="1"
@@ -271,17 +282,19 @@
 
 		</StackPanel>
 
-		<StackPanel Grid.Row="2"
+		<StackPanel x:Name="BottomBarContainer"
+				Grid.Row="2"
 				Orientation="Horizontal"
 				HorizontalAlignment="Right"
 				>
 
-			<StackPanel Orientation="Horizontal"
-					x:Name="CollapsedBottomBar"
-					Background="White"
+			<StackPanel x:Name="CollapsedBottomBar"
+					Visibility="Collapsed"
 					
-					MouseDown="ExpandBottomBarButton_MouseDown"
-					Visibility="Collapsed">
+					Orientation="Horizontal"
+					Background="{DynamicResource AppBackgroundColor}"
+					
+					MouseDown="ExpandBottomBarButton_MouseDown">
 
 				<ProgressBar Name="TimeBarCollapsed"
 						 Value="50" 
@@ -303,11 +316,13 @@
 					MouseDown="ExpandBottomBarButton_MouseDown" Height="48"
 					>&#xE96D;</Label>
 			</StackPanel>
-			<StackPanel Orientation="Horizontal"
+			<StackPanel x:Name="ActiveBottomBar"
+					Visibility="Visible"
+					
+					Orientation="Horizontal"
+					HorizontalAlignment="Right"
 					TextBlock.FontFamily="{DynamicResource ButtonSymbolFont}"
 					TextBlock.FontSize="{DynamicResource TimerButtonFontSize}"
-					
-					x:Name="ActiveBottomBar" HorizontalAlignment="Right"
 					>
 
 				<Image Width="50" Height="50" Source="/img/UrgryAnesthesia.png" Margin="0,0,20,0" />
