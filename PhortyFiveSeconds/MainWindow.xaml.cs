@@ -24,6 +24,12 @@ public partial class MainWindow : Window
 	bool IsSoundEnabled { get; set; } = true;
 	bool IsImageSetReady => Circulator.IsPopulated;
 	static Brush? GetBrush (string key) => Application.Current.Resources[key] as Brush;
+	static void SetPanelActive (UIElement element, bool active) => element.Visibility = active ? Visibility.Visible : Visibility.Collapsed;
+	static void SetCollapsiblePanelActive (UIElement activePanel, UIElement inactivePanel, bool active)
+	{
+		SetPanelActive(activePanel, active);
+		SetPanelActive(inactivePanel, !active);
+	}
 
 	IEnumerable<Button> ImageSetButtons
 	{
@@ -42,9 +48,11 @@ public partial class MainWindow : Window
 		{
 			yield return HideBottomBarMiniButton;
 			yield return ExpandBottomBarMiniButton;
+
 			yield return SoundToggle;
 			yield return AlwaysOnTopToggle;
 			yield return AboutButton;
+			yield return HelpButton;
 
 			foreach (var button in ImageSetButtons)
 			{
@@ -62,7 +70,7 @@ public partial class MainWindow : Window
 	public MainWindow ()
 	{
 		InitializeComponent();
-		SetTimerSettingsPanelVisible(false);
+		SetEditableTimerPanelActive(false);
 
 		VersionNumberOverlayLabel.Content = App.AssemblyVersionNumber;
 
@@ -113,12 +121,12 @@ public partial class MainWindow : Window
 		HelpButton.MouseDown += (_, _) => TryToggleHelpPanel();
 		HelpOverlayPanel.MouseDown += (_, _) => SetHelpPanelActive(false);
 
-		TimerSettingsUI.InitializeMenuChoices(SettingsButton, durationMenuItems, SetTimerDurationSeconds, () => SetTimerSettingsPanelVisible(true));
+		TimerSettingsUI.InitializeMenuChoices(SettingsButton, durationMenuItems, SetTimerDurationSeconds, () => SetEditableTimerPanelActive(true));
 		NonEditableTimerLabel.MouseDown += (_, mouseEvent) => {
 			mouseEvent.Handled = true;
-			SetTimerSettingsPanelVisible(true);
+			SetEditableTimerPanelActive(true);
 		};
-		SecondsInputTextbox.LostFocus += (_, _) => SetTimerSettingsPanelVisible(false);
+		SecondsInputTextbox.LostFocus += (_, _) => SetEditableTimerPanelActive(false);
 		SecondsInputTextbox.KeyDown += (_, keyEvent) => {
 			var key = keyEvent.Key;
 			if (key is Key.Escape)
@@ -148,8 +156,20 @@ public partial class MainWindow : Window
 	void PreviousImageCommand (object sender, RoutedEventArgs e) => TryMovePrevious();
 	void PlayPauseCommand (object sender, RoutedEventArgs e) => DoIfImageSetIsLoaded(Timer.TogglePlayPause);
 	void NextImageCommand (object sender, RoutedEventArgs e) => TryMoveNext();
-	void ToggleBottomBarCommand (object sender, ExecutedRoutedEventArgs e) => ToggleBottomBar();
+	void ToggleBottomBarCommand (object sender, ExecutedRoutedEventArgs e) => TryToggleBottomBar();
 	void ToggleHelpCommand (object sender, ExecutedRoutedEventArgs e) => TryToggleHelpPanel();
+	void ExpandBottomBarButton_MouseDown (object sender, MouseButtonEventArgs e) => SetBottomBarActive(true);
+	void DropTarget_DragEnter (object sender, DragEventArgs e) => SetDropHintOverlayActive(true);
+	void DropTarget_DragLeave (object sender, DragEventArgs e) => SetDropHintOverlayActive(false);
+
+	void TryToggleSound () => SetSoundActive(!IsSoundEnabled);
+	void TryToggleBottomBar () => SetBottomBarActive(CollapsedBottomBar.Visibility == Visibility.Visible);
+	void TryToggleHelpPanel () => SetHelpPanelActive(HelpOverlayPanel.Visibility == Visibility.Collapsed);
+	void TryToggleAlwaysOnTop () => SetAlwaysOnTop(!IsAlwaysOnTop);
+
+	void SetDropHintOverlayActive (bool active) => SetPanelActive(DropHintOverlay, active);
+	void SetHelpPanelActive (bool active) => SetPanelActive(HelpOverlayPanel, active);
+	void SetBottomBarActive (bool active) => SetCollapsiblePanelActive(ActiveBottomBar, CollapsedBottomBar, active);
 
 	void DropFilesCommand (object sender, DragEventArgs e)
 	{
@@ -160,21 +180,21 @@ public partial class MainWindow : Window
 			UserAppendFiles(files);
 		}
 
-		DropHintOverlay.Visibility = Visibility.Collapsed;
+		SetDropHintOverlayActive(false);
 	}
 
 	void SecondsInputTextBox_Enter ()
 	{
 		var userInputString = SecondsInputTextbox.Text;
 		TimerSettingsUI.TrySetDuration(userInputString);
-		SetTimerSettingsPanelVisible(false);
+		SetEditableTimerPanelActive(false);
 	}
 
 	void SecondsInputTextbox_Cancel ()
 	{
 		var unchangedTimerValue = Timer.DurationSeconds;
 		SecondsInputTextbox.Text = unchangedTimerValue.ToString();
-		SetTimerSettingsPanelVisible(false);
+		SetEditableTimerPanelActive(false);
 	}
 
 	void DoIfImageSetIsLoaded (Action action)
@@ -187,7 +207,7 @@ public partial class MainWindow : Window
 	{
 		Timer.SetDuration(TimeSpan.FromSeconds(durationSeconds));
 		Timer.Restart();
-		SetTimerSettingsPanelVisible(false);
+		SetEditableTimerPanelActive(false);
 	}
 
 	void TryMoveNext ()
@@ -250,6 +270,7 @@ public partial class MainWindow : Window
 	void TryStartNewSet ()
 	{
 		Timer.Restart();
+		SetHelpPanelActive(false);
 
 		if (!FileList.IsPopulated)
 		{
@@ -263,12 +284,6 @@ public partial class MainWindow : Window
 		UpdateSettingsTextBlock();
 
 		UpdateInteractibleState();
-	}
-
-	void SetBottomBarActive (bool active)
-	{
-		CollapsedBottomBar.Visibility = active ? Visibility.Collapsed : Visibility.Visible;
-		ActiveBottomBar.Visibility = active ? Visibility.Visible : Visibility.Collapsed;
 	}
 
 	void UpdateTimerIndicatorTick ()
@@ -309,14 +324,11 @@ public partial class MainWindow : Window
 		UpdateSettingsTextBlock();
 	}
 
-	void SetTimerSettingsPanelVisible (bool visible)
+	void SetEditableTimerPanelActive (bool active)
 	{
-		var hide = Visibility.Collapsed;
-		var show = Visibility.Visible;
-		EditableTimerSettingsPanel.Visibility = visible ? show : hide;
-		NonEditableTimerLabel.Visibility = visible ? hide : show;
+		SetCollapsiblePanelActive(EditableTimerSettingsPanel, NonEditableTimerLabel, active);
 
-		if (visible)
+		if (active)
 		{
 			SecondsInputTextbox.Focus();
 			SecondsInputTextbox.SelectAll();
@@ -327,15 +339,21 @@ public partial class MainWindow : Window
 		}
 	}
 
-	void TryToggleAlwaysOnTop ()
-	{
-		TrySetAlwaysOnTop(!IsAlwaysOnTop);
-	}
-
-	void TrySetAlwaysOnTop (bool alwaysOnTop)
+	void SetAlwaysOnTop (bool alwaysOnTop)
 	{
 		IsAlwaysOnTop = alwaysOnTop;
+		UpdateAlwaysOnTopButtonState();
+	}
 
+	void DismissTips ()
+	{
+		SetHelpPanelActive(false);
+		SetDropHintOverlayActive(false);
+		SetPanelActive(StartingTip, false);
+	}
+
+	void UpdateAlwaysOnTopButtonState ()
+	{
 		const string PinnedSymbol = "\uE842";
 		const string UnpinnedSymbol = "\uE718";
 		AlwaysOnTopToggle.Content = IsAlwaysOnTop ? PinnedSymbol : UnpinnedSymbol;
@@ -360,11 +378,6 @@ public partial class MainWindow : Window
 		PlayPauseButton.Content = label;
 	}
 
-	void DismissTips ()
-	{
-		this.StartingTip.Visibility = Visibility.Hidden;
-	}
-
 	void UpdateInteractibleState ()
 	{
 		foreach (var button in ImageSetButtons)
@@ -372,7 +385,7 @@ public partial class MainWindow : Window
 			button.IsEnabled = IsImageSetReady;
 		}
 
-		DropHintOverlay.Visibility = Visibility.Collapsed;
+		SetDropHintOverlayActive(false);
 	}
 
 	void PlaySound ()
@@ -380,47 +393,17 @@ public partial class MainWindow : Window
 		if (IsSoundEnabled) soundPlayer.Play();
 	}
 
-	void TryToggleSound ()
-	{
-		SetSoundActive(!IsSoundEnabled);
-	}
-
 	void SetSoundActive (bool active)
 	{
 		IsSoundEnabled = active;
+		UpdateSoundButtonState();
+	}
 
+	void UpdateSoundButtonState ()
+	{
 		const string MutedSymbol = "\uE74F";
 		const string SoundEnabledSymbol = "\uE994";
 		SoundToggle.Content = IsSoundEnabled ? SoundEnabledSymbol : MutedSymbol;
 	}
 
-	private void ExpandBottomBarButton_MouseDown (object sender, MouseButtonEventArgs e)
-	{
-		SetBottomBarActive(true);
-	}
-
-	void ToggleBottomBar ()
-	{
-		SetBottomBarActive(CollapsedBottomBar.Visibility == Visibility.Visible);
-	}
-
-	void DropTarget_DragEnter (object sender, DragEventArgs e)
-	{
-		DropHintOverlay.Visibility = Visibility.Visible;
-	}
-
-	void DropTarget_DragLeave (object sender, DragEventArgs e)
-	{
-		DropHintOverlay.Visibility = Visibility.Collapsed;
-	}
-
-	void TryToggleHelpPanel ()
-	{
-		SetHelpPanelActive(HelpOverlayPanel.Visibility == Visibility.Collapsed);
-	}
-
-	void SetHelpPanelActive (bool active)
-	{
-		HelpOverlayPanel.Visibility = active ? Visibility.Visible : Visibility.Collapsed;
-	}
 }
