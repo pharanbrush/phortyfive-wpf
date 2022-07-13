@@ -106,7 +106,6 @@ public partial class MainWindow : Window
 		TimeBar.Maximum = TimerIndicatorMaximum;
 		TimeBarCollapsed.Maximum = TimerIndicatorMaximum;
 
-
 		foreach (var element in TooltipElements)
 		{
 			element.MakeTooltipImmediate();
