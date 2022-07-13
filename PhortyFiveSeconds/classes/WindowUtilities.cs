@@ -56,5 +56,11 @@ static public class WindowUtilities
 			if (string.IsNullOrEmpty(labelText)) return;
 			Clipboard.SetText(labelText);
 		}
+		if (labelContent is TextBlock textBlock)
+		{
+			string text = textBlock.Text;
+			if (string.IsNullOrEmpty(text)) return;
+			Clipboard.SetText(text);
+		}
 	}
 }

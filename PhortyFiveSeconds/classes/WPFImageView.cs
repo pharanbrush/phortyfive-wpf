@@ -17,8 +17,20 @@ internal class WPFImageView
 
 	string LabelText
 	{
-		get => FileNameLabel.Content.ToString() ?? string.Empty;
-		set => FileNameLabel.Content = value;
+		get => FileNameLabel.Content is TextBlock textBlock ? textBlock.Text : string.Empty;
+
+		set
+		{
+			if (FileNameLabel.Content is not TextBlock)
+			{
+				FileNameLabel.Content = new TextBlock();
+			}
+
+			if (FileNameLabel.Content is TextBlock textBlock)
+			{
+				textBlock.Text = value;
+			}
+		}
 	}
 
 	public WPFImageView (Image imageElement, Label fileNameLabel)
