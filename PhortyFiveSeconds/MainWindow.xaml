@@ -12,7 +12,7 @@
 	<Window.Resources>
 		<SolidColorBrush x:Key="ImageFileNameLabelColor" Color="#4C373737"/>
 		<SolidColorBrush x:Key="VersionNumberOverlayColor" Color="#4C373737"/>
-		<SolidColorBrush x:Key="SubtleMinibuttonColor" Color="#4C373737"/>
+		
 		<SolidColorBrush x:Key="CollapseMinibuttonColor" Color="#B2373737"/>
 		<SolidColorBrush x:Key="AppBackgroundColor" Color="White"/>
 		<SolidColorBrush x:Key="VeryTransparentAppBackgroundColor" Color="#0CFFFFFF"/>
@@ -260,23 +260,26 @@
 				TextBlock.FontSize="15"
 				Orientation="Horizontal"
 				>
-			<Label Name="SoundToggle"
-				 Foreground="{DynamicResource SubtleMinibuttonColor}"
-				 ToolTip="Sounds"
-				 Content="&#xE994;" />
 
-			<Label Name="AlwaysOnTopToggle"
-				 Foreground="{DynamicResource SubtleMinibuttonColor}"
+			<Button x:Name="SoundMiniButton"
+				  Style="{StaticResource SubtleMiniButtonStyle}"
+				  ToolTip="Sounds"
+				  
+				  Content="&#xE994;"
+				  />
+
+			<Button x:Name="AlwaysOnTopToggle"
+				 Style="{StaticResource SubtleMiniButtonStyle}"
 				 ToolTip="Always on top"
 				 Content="&#xE718;" />
 
-			<Label Name="HelpButton"
-				 Foreground="{DynamicResource SubtleMinibuttonColor}"
+			<Button x:Name="HelpButton"
+				 Style="{StaticResource SubtleMiniButtonStyle}"
 				 ToolTip="Help"
 				 Content="&#xE897;" />
 
-			<Label Name="AboutButton"
-				 Foreground="{DynamicResource SubtleMinibuttonColor}"
+			<Button Name="AboutButton"
+				 Style="{StaticResource SubtleMiniButtonStyle}"
 				 ToolTip="About..."
 				 Content="&#xE946;" />
 
@@ -355,6 +358,7 @@
 
 				<Button Name="SettingsButton"
 					  
+					  Style="{DynamicResource MainControlButtonStyle}"
 					  Content="&#xE713;"
 					  Margin="5, 10"
 					  Width="{StaticResource buttonWidthNarrow}" Focusable="False"
@@ -372,6 +376,7 @@
 					<StackPanel Orientation="Horizontal" Height="{DynamicResource timerButtonsHeight}">
 						<Button Name="RestartTimerButton"
 							  
+							  Style="{DynamicResource MainControlButtonStyle}" 
 							  Content="&#xE777;"
 							  Margin="5"
 							  Width="{DynamicResource buttonWidth}"
@@ -382,6 +387,7 @@
 
 						<Button Name="PrevButton"
 							  
+							  Style="{DynamicResource MainControlButtonStyle}"
 							  Content="&#xE76B;"
 							  Margin="5"
 							  Width="{DynamicResource buttonWidth}"
@@ -392,6 +398,7 @@
 
 						<Button Name="PlayPauseButton"
 							  
+							  Style="{DynamicResource MainControlButtonStyle}"
 							  Content="&#xE768;"
 							  Margin="5"
 							  Width="{DynamicResource buttonWidth}"
@@ -401,6 +408,7 @@
 							  />
 						<Button Name="NextButton"
 							  
+							  Style="{DynamicResource MainControlButtonStyle}"
 							  Content="&#xE76C;"
 							  Margin="5"
 							  Width="{DynamicResource buttonWidth}"
@@ -413,6 +421,8 @@
 				<Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
 
 				<Button Name="OpenFolderButton"
+					  
+					  Style="{DynamicResource MainControlButtonStyle}"
 					  Margin="5, 10"
 					  Width="{StaticResource buttonBigWidth}"
 					  
@@ -421,7 +431,7 @@
 					  Click="OpenFolderCommand"
 					  >
 					<Button.ToolTip>
-						<ToolTip>Open Images... (CTRL + O)</ToolTip>
+						<ToolTip>Open Images... (Ctrl + O)</ToolTip>
 					</Button.ToolTip>
 
 				</Button>

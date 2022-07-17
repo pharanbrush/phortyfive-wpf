@@ -49,7 +49,7 @@ public partial class MainWindow : Window
 			yield return HideBottomBarMiniButton;
 			yield return ExpandBottomBarMiniButton;
 
-			yield return SoundToggle;
+			yield return SoundMiniButton;
 			yield return AlwaysOnTopToggle;
 			yield return AboutButton;
 			yield return HelpButton;
@@ -114,11 +114,12 @@ public partial class MainWindow : Window
 		SetSoundActive(true);
 
 		HideBottomBarMiniButton.MouseDown += (_, _) => SetBottomBarActive(false);
-		AlwaysOnTopToggle.MouseDown += (_, _) => TryToggleAlwaysOnTop();
-		SoundToggle.MouseDown += (_, _) => TryToggleSound();
-		AboutButton.MouseDown += (_, _) => TryOpenAboutWindow();
-		HelpButton.MouseDown += (_, _) => TryToggleHelpPanel();
 		HelpOverlayPanel.MouseDown += (_, _) => SetHelpPanelActive(false);
+
+		SoundMiniButton.Click += (_, _) => TryToggleSound();
+		AlwaysOnTopToggle.Click += (_, _) => TryToggleAlwaysOnTop();		
+		AboutButton.Click += (_, _) => TryOpenAboutWindow();
+		HelpButton.Click += (_, _) => TryToggleHelpPanel();
 
 		TimerSettingsUI.InitializeMenuChoices(SettingsButton, durationMenuItems, SetTimerDurationSeconds, () => SetEditableTimerPanelActive(true));
 		NonEditableTimerLabel.MouseDown += (_, mouseEvent) => {
@@ -249,6 +250,7 @@ public partial class MainWindow : Window
 		{
 			LoadFilesAndStartNewSet(filePaths);
 		}
+		UnfocusControls();
 	}
 
 	void UserAppendFiles (string[] files)
@@ -334,8 +336,13 @@ public partial class MainWindow : Window
 		}
 		else
 		{
-			FocusManager.SetFocusedElement(this, this);
+			UnfocusControls();
 		}
+	}
+
+	void UnfocusControls ()
+	{
+		FocusManager.SetFocusedElement(this, this);
 	}
 
 	void SetAlwaysOnTop (bool alwaysOnTop)
@@ -370,7 +377,7 @@ public partial class MainWindow : Window
 		const string PlaySymbol = "\uE768";
 		const string PauseSymbol = "\uE769";
 
-		var backgroundBrush = Timer.IsActive ? GetBrush("TimerActiveColor") : GetBrush("TimerPausedColor");
+		var backgroundBrush = Timer.IsActive ? GetBrush("Button.Active.Foreground") : GetBrush("Button.Paused.Foreground");
 		string label = Timer.IsActive ? PauseSymbol : PlaySymbol;
 
 		PlayPauseButton.Background = backgroundBrush;
@@ -402,7 +409,8 @@ public partial class MainWindow : Window
 	{
 		const string MutedSymbol = "\uE74F";
 		const string SoundEnabledSymbol = "\uE994";
-		SoundToggle.Content = IsSoundEnabled ? SoundEnabledSymbol : MutedSymbol;
+		SoundMiniButton.Content = IsSoundEnabled ? SoundEnabledSymbol : MutedSymbol;
+		
 	}
 
 }
