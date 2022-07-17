@@ -258,7 +258,7 @@
 				
 				TextBlock.FontFamily="{DynamicResource ButtonSymbolFont}"
 				TextBlock.FontSize="15"
-				Orientation="Horizontal"
+				Orientation="Horizontal" Margin="0,0,3,0"
 				>
 
 			<Button x:Name="SoundMiniButton"
@@ -365,7 +365,7 @@
 
 					  />
 
-				<Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
+				<Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Background="{DynamicResource MainControlsSeparator.Background}" Height="{DynamicResource ControlSeparatorHeight}" />
 				<StackPanel Orientation="Vertical" Height="Auto">
 					<ProgressBar Name="TimeBar"
 							 Value="50" 
@@ -418,7 +418,7 @@
 							  />
 					</StackPanel>
 				</StackPanel>
-				<Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
+				<Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Background="{DynamicResource MainControlsSeparator.Background}" Height="{DynamicResource ControlSeparatorHeight}" />
 
 				<Button Name="OpenFolderButton"
 					  

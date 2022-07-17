@@ -11,6 +11,8 @@
 		<System:Double x:Key="timerButtonsHeight">40</System:Double>
 		<System:Double x:Key="TimerButtonFontSize">16</System:Double>
 
+		<System:Double x:Key="ControlSeparatorHeight">30</System:Double>
+
 		<FontFamily x:Key="ButtonSymbolFont">Segoe MDL2 Assets</FontFamily>
 
 		<SolidColorBrush x:Key="TimerActiveColor" Color="CornflowerBlue"/>
@@ -29,14 +31,14 @@
 			</Setter>
 		</Style>
 
-		<SolidColorBrush x:Key="Button.Static.Background" Color="White"/>
+		<SolidColorBrush x:Key="Button.Static.Background" Color="Transparent"/>
 		<SolidColorBrush x:Key="Button.Static.Border" Color="Transparent" />
 		<SolidColorBrush x:Key="Button.MouseOver.Background" Color="#7FBEE6FD"/>
 		<SolidColorBrush x:Key="Button.MouseOver.Border" Color="#7F3C7FB1"/>
 		<SolidColorBrush x:Key="Button.Pressed.Background" Color="#7FC4E5F6"/>
 		<SolidColorBrush x:Key="Button.Pressed.Border" Color="#7F2C628B"/>
-		
-		<SolidColorBrush x:Key="Button.Disabled.Background" Color="White"/>
+
+		<SolidColorBrush x:Key="Button.Disabled.Background" Color="Transparent"/>
 		<SolidColorBrush x:Key="Button.Disabled.Border" Color="Transparent" />
 		<SolidColorBrush x:Key="Button.Disabled.Foreground" Color="#FFC3C3C3"/>
 
@@ -45,7 +47,7 @@
 		<SolidColorBrush x:Key="Button.Paused.Foreground" Color="#B2FDEFBE"/>
 		
 		<SolidColorBrush x:Key="SubtleMiniButton.Foreground" Color="#4C373737"/>
-
+		<SolidColorBrush x:Key="MainControlsSeparator.Background" Color="#335A5A5A"/>
 
 		<Style x:Key="MainControlButtonStyle" TargetType="{x:Type Button}">
 			<Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual}"/>
@@ -93,6 +95,7 @@
 			<Setter Property="BorderThickness" Value="1"/>
 			<Setter Property="HorizontalContentAlignment" Value="Center"/>
 			<Setter Property="VerticalContentAlignment" Value="Center"/>
+			<Setter Property="Margin" Value="5, 0"/>
 			<Setter Property="Padding" Value="3, 2"/>
 			<Setter Property="Template">
 				<Setter.Value>
@@ -122,6 +125,11 @@
 				</Setter.Value>
 			</Setter>
 		</Style>
+		
+		<ControlTemplate x:Key="MainControlsSeparatorStyle" TargetType="{x:Type Separator}">
+			<Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Height="1" SnapsToDevicePixels="true"/>
+		</ControlTemplate>
+		
 	</Application.Resources>
 
 </Application>
