@@ -16,32 +16,17 @@ public partial class MainWindow : Window
 	readonly Timer Timer = new();
 	readonly WPFImageView ImageView;
 	readonly TimerSettingsUI TimerSettingsUI = new();
+	readonly EditableTimerPanelUI EditableTimerPanelUI;
 	readonly Toaster Toaster;
 	readonly SoundPlayer soundPlayer = new(Properties.Resources.ClackSound);
+	readonly double TimerIndicatorMaximum = (double)Application.Current.Resources["TimeBarMaximum"];
 
-	bool IsSoundEnabled { get; set; } = true;
 	bool IsImageSetReady => Circulator.IsPopulated;
-
-	static Brush? GetBrush (string key) => Application.Current.Resources[key] as Brush;
-
-	static double TimerIndicatorMaximum = Application.Current.Resources["TimeBarMaximum"] as double? ?? 0;
-
-	static void SetPanelActive (UIElement element, bool active) => element.Visibility = active ? Visibility.Visible : Visibility.Collapsed;
-	static void SetCollapsiblePanelActive (UIElement activePanel, UIElement inactivePanel, bool active)
+	bool IsSoundEnabled { get; set; } = true;
+	bool IsAlwaysOnTop
 	{
-		SetPanelActive(activePanel, active);
-		SetPanelActive(inactivePanel, !active);
-	}
-
-	IEnumerable<Button> ImageSetButtons
-	{
-		get
-		{
-			yield return PlayPauseButton;
-			yield return NextButton;
-			yield return PrevButton;
-			yield return RestartTimerButton;
-		}
+		get => this.Topmost;
+		set => this.Topmost = value;
 	}
 
 	IEnumerable<FrameworkElement> TooltipElements
@@ -56,17 +41,11 @@ public partial class MainWindow : Window
 			yield return AboutButton;
 			yield return HelpButton;
 
-			foreach (var button in ImageSetButtons)
-			{
-				yield return button;
-			}
+			yield return PlayPauseButton;
+			yield return NextButton;
+			yield return PrevButton;
+			yield return RestartTimerButton;
 		}
-	}
-
-	bool IsAlwaysOnTop
-	{
-		get => this.Topmost;
-		set => this.Topmost = value;
 	}
 
 	public MainWindow ()
@@ -82,6 +61,19 @@ public partial class MainWindow : Window
 		Timer.DurationChanged += UpdateTimerDurationIndicators;
 		Timer.SetDuration(TimeSpan.FromSeconds(60));
 
+		int GetTimerDurationSeconds () => Timer.DurationSeconds;
+		void SetTimerDurationSecondsString (string seconds) => TimerSettingsUI.TrySetDuration(seconds);
+		void ActivateEditableTimerPanel () => EditableTimerPanelUI.SetActive(true);
+		EditableTimerPanelUI = new(
+			SecondsInputTextbox,
+			EditableTimerSettingsPanel,
+			NonEditableTimerLabel,
+			UnfocusControls,
+			GetTimerDurationSeconds,
+			SetTimerDurationSecondsString
+			 );
+		this.MouseDown += (_, _) => EditableTimerPanelUI.UserCancel(); // Allow clicking on the window to close the control.
+
 		(int duration, string text)[] durationMenuItems = {
 			(15, "15 seconds"),
 			(30, "30 seconds"),
@@ -91,8 +83,7 @@ public partial class MainWindow : Window
 			(5 * 60, "5 minutes"),
 			(10 * 60, "10 minutes"),
 		};
-
-		TimerSettingsUI.InitializeMenuChoices(SettingsButton, durationMenuItems, SetTimerDurationSeconds, () => SetEditableTimerPanelActive(true));
+		TimerSettingsUI.InitializeMenuChoices(SettingsButton, durationMenuItems, SetTimerDurationSeconds, ActivateEditableTimerPanel);
 
 		Circulator.OnCurrentNumberChanged += UpdateCurrentImage;
 
@@ -105,8 +96,7 @@ public partial class MainWindow : Window
 		HelpOverlayPanel.MouseDown += (_, _) => SetHelpPanelActive(false);
 
 		InitializeSoundBindings();
-		InitializeEditableTimeControl();
-		MakeTooltipsImmediate();
+		InitializeTooltipSettings();
 		UpdatePlayPauseButtonState();
 		UpdateTimerDurationIndicators();
 		UpdateInteractibleState();
@@ -118,42 +108,15 @@ public partial class MainWindow : Window
 		Circulator.OnCurrentNumberChanged += PlaySound;
 		Timer.PlayPauseChanged += PlaySound;
 		Timer.DurationChanged += PlaySound;
+		Timer.Restarted += PlaySound;
 		SetSoundActive(true);
 	}
 
-	void MakeTooltipsImmediate ()
+	void InitializeTooltipSettings ()
 	{
-		foreach (var element in TooltipElements)
-		{
-			element.MakeTooltipImmediate();
-		}
+		TooltipElements.MakeTooltipsImmediate();
 		OpenFolderButton.MakeTooltipImmediate();
 		OpenFolderButton.SetTooltipPlacement(PlacementMode.Top);
-		HideBottomBarMiniButton.SetTooltipPlacement(PlacementMode.Top);
-	}
-
-	void InitializeEditableTimeControl ()
-	{
-		SetEditableTimerPanelActive(false);
-		NonEditableTimerLabel.MouseDown += (_, mouseEvent) => {
-			mouseEvent.Handled = true;
-			SetEditableTimerPanelActive(true);
-		};
-		SecondsInputTextbox.LostFocus += (_, _) => SetEditableTimerPanelActive(false);
-		SecondsInputTextbox.KeyDown += (_, keyEvent) => {
-			var key = keyEvent.Key;
-			if (key is Key.Escape)
-			{
-				keyEvent.Handled = true;
-				SecondsInputTextbox_Cancel();
-			}
-			else if (key is Key.Enter)
-			{
-				keyEvent.Handled = true;
-				SecondsInputTextBox_Enter();
-			}
-		};
-		this.MouseDown += (_, _) => SecondsInputTextbox_Cancel();
 	}
 
 	// COMMANDS (BUTTONS)
@@ -177,9 +140,9 @@ public partial class MainWindow : Window
 	void TryToggleHelpPanel () => SetHelpPanelActive(HelpOverlayPanel.Visibility == Visibility.Collapsed);
 	void TryToggleAlwaysOnTop () => SetAlwaysOnTop(!IsAlwaysOnTop);
 
-	void SetDropHintOverlayActive (bool active) => SetPanelActive(DropHintOverlay, active);
-	void SetHelpPanelActive (bool active) => SetPanelActive(HelpOverlayPanel, active);
-	void SetBottomBarActive (bool active) => SetCollapsiblePanelActive(ActiveBottomBar, CollapsedBottomBar, active);
+	void SetDropHintOverlayActive (bool active) => DropHintOverlay.SetPanelActive(active);
+	void SetHelpPanelActive (bool active) => HelpOverlayPanel.SetPanelActive(active);
+	void SetBottomBarActive (bool active) => WindowUtilities.SetCollapsiblePanelActive(ActiveBottomBar, CollapsedBottomBar, active);
 
 	void DropFilesCommand (object sender, DragEventArgs e)
 	{
@@ -193,20 +156,6 @@ public partial class MainWindow : Window
 		SetDropHintOverlayActive(false);
 	}
 
-	void SecondsInputTextBox_Enter ()
-	{
-		var userInputString = SecondsInputTextbox.Text;
-		TimerSettingsUI.TrySetDuration(userInputString);
-		SetEditableTimerPanelActive(false);
-	}
-
-	void SecondsInputTextbox_Cancel ()
-	{
-		var unchangedTimerValue = Timer.DurationSeconds;
-		SecondsInputTextbox.Text = unchangedTimerValue.ToString();
-		SetEditableTimerPanelActive(false);
-	}
-
 	void DoIfImageSetIsLoaded (Action action)
 	{
 		if (IsImageSetReady)
@@ -217,7 +166,12 @@ public partial class MainWindow : Window
 	{
 		Timer.SetDuration(TimeSpan.FromSeconds(durationSeconds));
 		Timer.Restart();
-		SetEditableTimerPanelActive(false);
+		EditableTimerPanelUI.SetActive(false);
+	}
+
+	void TryRestartTimer ()
+	{
+		DoIfImageSetIsLoaded(() => Timer.Restart());
 	}
 
 	void TryMoveNext ()
@@ -225,14 +179,6 @@ public partial class MainWindow : Window
 		DoIfImageSetIsLoaded(() => {
 			Circulator.MoveNext();
 			Timer.Restart();
-		});
-	}
-
-	void TryRestartTimer ()
-	{
-		DoIfImageSetIsLoaded(() => {
-			Timer.Restart();
-			PlaySound();
 		});
 	}
 
@@ -300,7 +246,6 @@ public partial class MainWindow : Window
 		Timer.IsActive = true;
 		DismissTips();
 		UpdateSettingsTextBlock();
-
 		UpdateInteractibleState();
 	}
 
@@ -332,29 +277,15 @@ public partial class MainWindow : Window
 
 	void UpdateTimerDurationIndicators ()
 	{
-		TimerSettingsUI.UpdateSelectedState(Timer.DurationSeconds);
-
-		string secondsText = Timer.DurationSeconds.ToString();
-		SecondsInputTextbox.Text = secondsText;
-		NonEditableTimerLabel.Content = $"{secondsText} seconds each";
+		int durationSeconds = Timer.DurationSeconds;
+		TimerSettingsUI.UpdateSelectedState(durationSeconds);
+		if (EditableTimerPanelUI is not null)
+		{
+			EditableTimerPanelUI.TextBoxValue = durationSeconds.ToString();
+		}
 
 		UpdateTimerPlayPausedIndicator();
 		UpdateSettingsTextBlock();
-	}
-
-	void SetEditableTimerPanelActive (bool active)
-	{
-		SetCollapsiblePanelActive(EditableTimerSettingsPanel, NonEditableTimerLabel, active);
-
-		if (active)
-		{
-			SecondsInputTextbox.Focus();
-			SecondsInputTextbox.SelectAll();
-		}
-		else
-		{
-			UnfocusControls();
-		}
 	}
 
 	void UnfocusControls ()
@@ -372,7 +303,7 @@ public partial class MainWindow : Window
 	{
 		SetHelpPanelActive(false);
 		SetDropHintOverlayActive(false);
-		SetPanelActive(StartingTip, false);
+		StartingTip.SetPanelActive(false);
 	}
 
 	void UpdateAlwaysOnTopButtonState ()
@@ -384,7 +315,7 @@ public partial class MainWindow : Window
 
 	void UpdateTimerPlayPausedIndicator ()
 	{
-		var color = Timer.IsActive ? GetBrush("TimeBarActiveColor") : GetBrush("TimeBarPausedColor");
+		var color = Timer.IsActive ? App.GetBrush("TimeBarActiveColor") : App.GetBrush("TimeBarPausedColor");
 		TimeBar.Foreground = color;
 		TimeBarCollapsed.Foreground = color;
 	}
@@ -394,7 +325,7 @@ public partial class MainWindow : Window
 		const string PlaySymbol = "\uE768";
 		const string PauseSymbol = "\uE769";
 
-		var backgroundBrush = Timer.IsActive ? GetBrush("Button.Active.Foreground") : GetBrush("Button.Paused.Foreground");
+		var backgroundBrush = Timer.IsActive ? App.GetBrush("Button.Active.Foreground") : App.GetBrush("Button.Paused.Foreground");
 		string label = Timer.IsActive ? PauseSymbol : PlaySymbol;
 
 		PlayPauseButton.Background = backgroundBrush;
@@ -403,11 +334,7 @@ public partial class MainWindow : Window
 
 	void UpdateInteractibleState ()
 	{
-		foreach (var button in ImageSetButtons)
-		{
-			button.IsEnabled = IsImageSetReady;
-		}
-
+		CirculatorControls.IsEnabled = IsImageSetReady;
 		SetDropHintOverlayActive(false);
 	}
 
@@ -445,7 +372,7 @@ public partial class MainWindow : Window
 		var oldCollapsedOrder = GetOrderCopy(CollapsedBottomBar.Children);
 		SetOrderBackwards(CollapsedBottomBar.Children, oldCollapsedOrder);
 
-		List<UIElement> GetOrderCopy (UIElementCollection elementCollection)
+		static List<UIElement> GetOrderCopy (UIElementCollection elementCollection)
 		{
 			var returnOrder = new List<UIElement>();
 			foreach (var o in elementCollection)
@@ -455,7 +382,7 @@ public partial class MainWindow : Window
 			return returnOrder;
 		}
 
-		void SetOrderBackwards (UIElementCollection destination, List<UIElement> source)
+		static void SetOrderBackwards (UIElementCollection destination, List<UIElement> source)
 		{
 			destination.Clear();
 			int n = source.Count;

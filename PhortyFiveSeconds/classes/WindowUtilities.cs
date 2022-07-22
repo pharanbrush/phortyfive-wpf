@@ -19,6 +19,14 @@ static public class WindowUtilities
 		ToolTipService.SetInitialShowDelay(element, 10);
 	}
 
+	public static void MakeTooltipsImmediate (this IEnumerable<FrameworkElement> elements)
+	{
+		foreach (var element in elements)
+		{
+			element.MakeTooltipImmediate();
+		}
+	}
+
 	public static void SetTooltipPlacement (this FrameworkElement element, PlacementMode mode)
 	{
 		ToolTipService.SetPlacement(element, mode);
@@ -30,6 +38,14 @@ static public class WindowUtilities
 		{
 			ToolTipService.SetPlacement(element, mode);
 		}
+	}
+
+	public static void SetPanelActive (this UIElement element, bool active) => element.Visibility = active ? Visibility.Visible : Visibility.Collapsed;
+
+	public static void SetCollapsiblePanelActive (UIElement activePanel, UIElement inactivePanel, bool active)
+	{
+		activePanel.SetPanelActive(active);
+		inactivePanel.SetPanelActive(!active);
 	}
 
 	public static void AllowRightClickCopy (Label label, string menuItemLabel = "Copy")

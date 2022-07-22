@@ -336,6 +336,7 @@
 					MouseDown="ExpandBottomBarButton_MouseDown" Height="48"
 					>&#xE96D;</Label>
 			</StackPanel>
+
 			<StackPanel x:Name="ActiveBottomBar"
 					Visibility="Visible"
 					
