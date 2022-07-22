@@ -10,6 +10,7 @@
 		<System:Double x:Key="buttonWidthNarrow">30</System:Double>
 		<System:Double x:Key="timerButtonsHeight">40</System:Double>
 		<System:Double x:Key="TimerButtonFontSize">16</System:Double>
+		<System:Double x:Key="TimeBarMaximum">200</System:Double>
 
 		<System:Double x:Key="ControlSeparatorHeight">30</System:Double>
 

@@ -11,8 +11,6 @@ namespace PhortyFiveSeconds;
 
 public partial class MainWindow : Window
 {
-	const int TimerIndicatorMaximum = 200;
-
 	readonly FileList FileList = new();
 	readonly Circulator Circulator = new();
 	readonly Timer Timer = new();
@@ -23,7 +21,11 @@ public partial class MainWindow : Window
 
 	bool IsSoundEnabled { get; set; } = true;
 	bool IsImageSetReady => Circulator.IsPopulated;
+
 	static Brush? GetBrush (string key) => Application.Current.Resources[key] as Brush;
+
+	static double TimerIndicatorMaximum = Application.Current.Resources["TimeBarMaximum"] as double? ?? 0;
+
 	static void SetPanelActive (UIElement element, bool active) => element.Visibility = active ? Visibility.Visible : Visibility.Collapsed;
 	static void SetCollapsiblePanelActive (UIElement activePanel, UIElement inactivePanel, bool active)
 	{
@@ -70,8 +72,6 @@ public partial class MainWindow : Window
 	public MainWindow ()
 	{
 		InitializeComponent();
-		SetEditableTimerPanelActive(false);
-
 		VersionNumberOverlayLabel.Content = App.AssemblyVersionNumber;
 
 		Timer.PlayPauseChanged += UpdatePlayPauseButtonState;
@@ -80,7 +80,7 @@ public partial class MainWindow : Window
 		Timer.VisualUpdate += UpdateTimerIndicatorTick;
 		Timer.Elapsed += TryMoveNext;
 		Timer.DurationChanged += UpdateTimerDurationIndicators;
-		Timer.SetDuration(TimeSpan.FromSeconds(30));
+		Timer.SetDuration(TimeSpan.FromSeconds(60));
 
 		(int duration, string text)[] durationMenuItems = {
 			(15, "15 seconds"),
@@ -92,36 +92,49 @@ public partial class MainWindow : Window
 			(10 * 60, "10 minutes"),
 		};
 
+		TimerSettingsUI.InitializeMenuChoices(SettingsButton, durationMenuItems, SetTimerDurationSeconds, () => SetEditableTimerPanelActive(true));
+
 		Circulator.OnCurrentNumberChanged += UpdateCurrentImage;
 
 		Toaster = new(ToastLabel);
 		ImageView = new(MainImageView, ImageFileNameLabel);
 		ImageView.HandleClipboardToast(Toaster.Toast);
 
+		Oppression.MouseDown += (_, _) => ToggleBottomBarOrder();
+		HideBottomBarMiniButton.MouseDown += (_, _) => SetBottomBarActive(false);
+		HelpOverlayPanel.MouseDown += (_, _) => SetHelpPanelActive(false);
+
+		InitializeSoundBindings();
+		InitializeEditableTimeControl();
+		MakeTooltipsImmediate();
+		UpdatePlayPauseButtonState();
+		UpdateTimerDurationIndicators();
+		UpdateInteractibleState();
+	}
+
+	void InitializeSoundBindings ()
+	{
 		soundPlayer.LoadAsync();
 		Circulator.OnCurrentNumberChanged += PlaySound;
 		Timer.PlayPauseChanged += PlaySound;
 		Timer.DurationChanged += PlaySound;
+		SetSoundActive(true);
+	}
 
-		TimeBar.Maximum = TimerIndicatorMaximum;
-		TimeBarCollapsed.Maximum = TimerIndicatorMaximum;
-
+	void MakeTooltipsImmediate ()
+	{
 		foreach (var element in TooltipElements)
 		{
 			element.MakeTooltipImmediate();
 		}
+		OpenFolderButton.MakeTooltipImmediate();
+		OpenFolderButton.SetTooltipPlacement(PlacementMode.Top);
+		HideBottomBarMiniButton.SetTooltipPlacement(PlacementMode.Top);
+	}
 
-		SetSoundActive(true);
-
-		HideBottomBarMiniButton.MouseDown += (_, _) => SetBottomBarActive(false);
-		HelpOverlayPanel.MouseDown += (_, _) => SetHelpPanelActive(false);
-
-		SoundMiniButton.Click += (_, _) => TryToggleSound();
-		AlwaysOnTopToggle.Click += (_, _) => TryToggleAlwaysOnTop();		
-		AboutButton.Click += (_, _) => TryOpenAboutWindow();
-		HelpButton.Click += (_, _) => TryToggleHelpPanel();
-
-		TimerSettingsUI.InitializeMenuChoices(SettingsButton, durationMenuItems, SetTimerDurationSeconds, () => SetEditableTimerPanelActive(true));
+	void InitializeEditableTimeControl ()
+	{
+		SetEditableTimerPanelActive(false);
 		NonEditableTimerLabel.MouseDown += (_, mouseEvent) => {
 			mouseEvent.Handled = true;
 			SetEditableTimerPanelActive(true);
@@ -141,21 +154,18 @@ public partial class MainWindow : Window
 			}
 		};
 		this.MouseDown += (_, _) => SecondsInputTextbox_Cancel();
-
-		OpenFolderButton.MakeTooltipImmediate();
-		OpenFolderButton.SetTooltipPlacement(PlacementMode.Top);
-
-		UpdatePlayPauseButtonState();
-		UpdateTimerDurationIndicators();
-		UpdateInteractibleState();
 	}
 
-	// BUTTONS
-	void OpenFolderCommand (object sender, RoutedEventArgs e) => UserOpenFiles();
+	// COMMANDS (BUTTONS)
+	void OpenFolderCommand (object sender, RoutedEventArgs e) => UserOpenFolder();
 	void RestartTimerCommand (object sender, RoutedEventArgs e) => TryRestartTimer();
 	void PreviousImageCommand (object sender, RoutedEventArgs e) => TryMovePrevious();
 	void PlayPauseCommand (object sender, RoutedEventArgs e) => DoIfImageSetIsLoaded(Timer.TogglePlayPause);
 	void NextImageCommand (object sender, RoutedEventArgs e) => TryMoveNext();
+	void ToggleSoundCommand (object sender, RoutedEventArgs e) => TryToggleSound();
+	void ToggleAlwaysOnTopCommand (object sender, RoutedEventArgs e) => TryToggleAlwaysOnTop();
+	void ToggleHelpPanelCommand (object sender, RoutedEventArgs e) => TryToggleHelpPanel();
+	void OpenAboutWindowCommand (object sender, RoutedEventArgs e) => TryOpenAboutWindow();
 	void ToggleBottomBarCommand (object sender, ExecutedRoutedEventArgs e) => TryToggleBottomBar();
 	void ToggleHelpCommand (object sender, ExecutedRoutedEventArgs e) => TryToggleHelpPanel();
 	void ExpandBottomBarButton_MouseDown (object sender, MouseButtonEventArgs e) => SetBottomBarActive(true);
@@ -237,10 +247,7 @@ public partial class MainWindow : Window
 	void TryOpenAboutWindow ()
 	{
 		// Don't cache. You can't reopen a window once it's closed by the user.
-		var aboutWindow = new AboutWindow
-		{
-			Owner = this,
-		};
+		var aboutWindow = new AboutWindow { Owner = this, };
 		aboutWindow.ShowDialog();
 	}
 
@@ -253,11 +260,21 @@ public partial class MainWindow : Window
 		UnfocusControls();
 	}
 
+	void UserOpenFolder ()
+	{
+		if (FileUtilities.OpenPickerForImageFolder(out IEnumerable<string> imageFilePaths))
+		{
+			LoadFilesAndStartNewSet(imageFilePaths);
+		}
+		UnfocusControls();
+	}
+
 	void UserAppendFiles (string[] files)
 	{
-		int filesAppended = FileList.Append(FileUtilities.EnumerateImages(files));
-		Toaster.Toast($"{filesAppended} {(filesAppended == 1 ? "image" : "images")} added.");
-		if (filesAppended <= 0) return;
+		int filesAppendedCount = FileList.Append(FileUtilities.EnumerateImages(files));
+		Toaster.Toast($"{filesAppendedCount} {(filesAppendedCount == 1 ? "image" : "images")} added.");
+		if (filesAppendedCount <= 0) return;
+
 		TryStartNewSet();
 	}
 
@@ -410,7 +427,43 @@ public partial class MainWindow : Window
 		const string MutedSymbol = "\uE74F";
 		const string SoundEnabledSymbol = "\uE994";
 		SoundMiniButton.Content = IsSoundEnabled ? SoundEnabledSymbol : MutedSymbol;
-		
+	}
+
+	void ToggleBottomBarOrder ()
+	{
+		DismissTips();
+		var rightHandedFirstElement = Oppression;
+
+		var oldOrder = GetOrderCopy(ActiveBottomBar.Children);
+		bool oldOrderIsRightHanded = (oldOrder[0] == rightHandedFirstElement);
+		bool newOrderIsRightHanded = !oldOrderIsRightHanded;
+		var horizontalAlignment = newOrderIsRightHanded ? HorizontalAlignment.Right : HorizontalAlignment.Left;
+
+		BottomBarContainer.HorizontalAlignment = horizontalAlignment;
+
+		SetOrderBackwards(ActiveBottomBar.Children, oldOrder);
+		var oldCollapsedOrder = GetOrderCopy(CollapsedBottomBar.Children);
+		SetOrderBackwards(CollapsedBottomBar.Children, oldCollapsedOrder);
+
+		List<UIElement> GetOrderCopy (UIElementCollection elementCollection)
+		{
+			var returnOrder = new List<UIElement>();
+			foreach (var o in elementCollection)
+			{
+				if (o is UIElement element) returnOrder.Add(element);
+			}
+			return returnOrder;
+		}
+
+		void SetOrderBackwards (UIElementCollection destination, List<UIElement> source)
+		{
+			destination.Clear();
+			int n = source.Count;
+			for (int i = n - 1; i >= 0; i--)
+			{
+				destination.Add(source[i]);
+			}
+		}
 	}
 
 }

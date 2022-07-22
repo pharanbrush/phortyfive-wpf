@@ -4,7 +4,8 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net6.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
-    <UseWPF>true</UseWPF>
+	  <UseWindowsForms>true</UseWindowsForms>
+	  <UseWPF>true</UseWPF>
     <StartupObject>PhortyFiveSeconds.App</StartupObject>
     <ApplicationIcon>PhortyFive Icon v4.ico</ApplicationIcon>
     <PackageIcon>PhortyFive Icon v4.png</PackageIcon>

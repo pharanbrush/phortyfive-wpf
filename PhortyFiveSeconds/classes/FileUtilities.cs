@@ -4,6 +4,10 @@ using System.IO;
 using System.Text;
 using Microsoft.Win32;
 
+using FolderBrowserDialog = System.Windows.Forms.FolderBrowserDialog;
+using DialogResult = System.Windows.Forms.DialogResult;
+
+
 namespace PhortyFiveSeconds;
 static internal class FileUtilities
 {
@@ -38,7 +42,7 @@ static internal class FileUtilities
 		return userPressedOk;
 	}
 
-	internal static IEnumerable<string> EnumerateImages (IEnumerable<string> filePaths)
+	public static IEnumerable<string> EnumerateImages (IEnumerable<string> filePaths)
 	{
 		foreach (var file in filePaths)
 		{
@@ -47,6 +51,28 @@ static internal class FileUtilities
 				yield return file;
 			}
 		}
+	}
+
+	public static bool OpenPickerForImageFolder (out IEnumerable<string> outputFileNames)
+	{
+		using var dialog = new FolderBrowserDialog();
+		var result = dialog.ShowDialog();
+		bool userPressedOk = result is DialogResult.OK;
+		outputFileNames = null;
+
+		if (userPressedOk)
+		{
+			string folderPath = dialog.SelectedPath;
+			outputFileNames = FileUtilities.EnumerateImagesFromFolder(folderPath);
+		}
+
+		return userPressedOk;
+	}
+
+	public static IEnumerable<string> EnumerateImagesFromFolder (string folderPath)
+	{
+		var files = Directory.GetFiles(folderPath);
+		return EnumerateImages(files);
 	}
 
 	internal static bool IsImage (string fileName)

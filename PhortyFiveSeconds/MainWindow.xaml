@@ -54,7 +54,11 @@
 
 	<Window.InputBindings>
 		<KeyBinding Key="J" Command="{StaticResource NextImageCommand}" />
+		<KeyBinding Key="Right" Command="{StaticResource NextImageCommand}" />
+		
 		<KeyBinding Key="K" Command="{StaticResource PreviousImageCommand}" />
+		<KeyBinding Key="Left" Command="{StaticResource PreviousImageCommand}" />
+		
 		<KeyBinding Key="R" Command="{StaticResource RestartTimerCommand}" />
 		<KeyBinding Key="P" Command="{StaticResource PlayPauseCommand}" />
 		<KeyBinding Key="O" Modifiers="Ctrl" Command="{StaticResource OpenFolderCommand}" />
@@ -77,131 +81,6 @@
 			<RowDefinition Height="*" />
 			<RowDefinition Height="Auto" />
 		</Grid.RowDefinitions>
-
-		<Label Name="ImageFileNameLabel" Grid.Row="0" 
-			 Foreground="{DynamicResource ImageFileNameLabelColor}"
-			 HorizontalAlignment="Center"
-			 VerticalAlignment="Top"
-			 FontSize="10"
-			 Cursor="IBeam"
-			 
-			 Content="."
-			 
-			 ToolTip="Double-click to copy" />
-
-		<Label Name="ToastLabel" Grid.Row="0"
-			 Content="."
-			 HorizontalAlignment="Center"
-			 VerticalAlignment="Top"
-			 FontSize="9"
-			 Background="#FFAFEFFF"
-			 Visibility="Hidden" />
-
-		<Image Name="MainImageView" 
-			 Grid.Row="1"
-			 Stretch="Uniform"
-			 RenderOptions.BitmapScalingMode="HighQuality"
-			 />
-
-		<Label Name="VersionNumberOverlayLabel"
-			 Grid.Row="1"
-			 Foreground="{DynamicResource VersionNumberOverlayColor}"
-			 HorizontalAlignment="Right"
-			 VerticalAlignment="Top">v 0.5.0</Label>
-
-		<StackPanel Name="HelpOverlayPanel"
-				
-				Visibility="Collapsed"
-				
-				Grid.Row="1"
-				HorizontalAlignment="Stretch"
-				VerticalAlignment="Center"
-				Background="#B2000000"
-				Orientation="Vertical"
-				Height="Auto" Width="Auto"
-				
-				TextElement.Foreground="White"
-				TextBlock.Foreground="White"
-				>
-
-			<StackPanel Orientation="Vertical" Margin="100,50,100,120" HorizontalAlignment="Center">
-				<StackPanel Orientation="Vertical" HorizontalAlignment="Center">
-					<Label HorizontalAlignment="Center" FontSize="36" FontWeight="Bold" Foreground="White" FontFamily="{DynamicResource ButtonSymbolFont}" VerticalAlignment="Center" Margin="0,0,0,-10">&#xE765;</Label>
-					<Label HorizontalAlignment="Center" FontSize="24" FontWeight="Bold" Foreground="White">Keyboard Shortcuts</Label>
-				</StackPanel>
-
-				<Border CornerRadius="10,10,10,10" Background="#7F000000" Margin="0,5,0,20" >
-					<Grid TextBlock.FontSize="16" Margin="20, 30, 20 30" Width="500">
-						<Grid.ColumnDefinitions>
-							<ColumnDefinition Width="*"/>
-							<ColumnDefinition Width="*"/>
-						</Grid.ColumnDefinitions>
-
-						<StackPanel Grid.Column="0" Orientation="Vertical" Margin="0,0,20,0">
-							<Grid Margin="0,0,0,5">
-								<Grid.ColumnDefinitions>
-									<ColumnDefinition Width="*"/>
-									<ColumnDefinition Width="*"/>
-								</Grid.ColumnDefinitions>
-
-								<TextBlock Grid.Column="0" Text="Open files..." />
-								<StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
-									<components:KeyTextBlock Text="Ctrl" />
-									<TextBlock Text="+" />
-									<components:KeyTextBlock Text="O" />
-								</StackPanel>
-							</Grid>
-
-							<TextBlock />
-							<components:HotkeyListItem
-								CommandName="Next image"
-								Key="J"
-								/>
-
-							<components:HotkeyListItem
-								CommandName="Previous image"
-								Key="K"
-								/>
-							<TextBlock />
-							<components:HotkeyListItem
-								CommandName="Play/Pause"
-								Key="P"
-								/>
-							<components:HotkeyListItem
-								CommandName="Restart timer"
-								Key="R"
-								/>
-						</StackPanel>
-						<StackPanel Grid.Column="1" Orientation="Vertical">
-							<components:HotkeyListItem
-								CommandName="Toggle bottom bar"
-								Key="H"
-								/>
-
-							<components:HotkeyListItem
-								CommandName="Toggle help"
-								Key="F1"
-								/>
-						</StackPanel>
-					</Grid>
-					
-					
-					
-				</Border>
-
-				<TextBlock 
-					HorizontalAlignment="Center"
-					FontSize="18"
-					Foreground="White" 
-					TextAlignment="Center"
-					TextWrapping="Wrap" VerticalAlignment="Center"
-					>
-					
-					<Run FontFamily="{DynamicResource ButtonSymbolFont}" FontSize="20">&#xE8DA;</Run> <Run>You can also add images to a set using drag and drop.</Run>
-				</TextBlock>
-			</StackPanel>
-
-		</StackPanel>
 
 		<StackPanel Name="DropHintOverlay"
 				Visibility="Collapsed"
@@ -250,6 +129,25 @@
 			</StackPanel>
 		</StackPanel>
 
+		<Label Name="ToastLabel" Grid.Row="0"
+			 Content="."
+			 HorizontalAlignment="Center"
+			 VerticalAlignment="Top"
+			 FontSize="9"
+			 Background="#FFAFEFFF"
+			 Visibility="Hidden" />
+		
+		<Label Name="ImageFileNameLabel" Grid.Row="0" 
+			 Foreground="{DynamicResource ImageFileNameLabelColor}"
+			 HorizontalAlignment="Center"
+			 VerticalAlignment="Top"
+			 FontSize="10"
+			 Cursor="IBeam"
+			 
+			 Content="."
+			 
+			 ToolTip="Double-click to copy" />
+
 		<StackPanel Name="MiniButtons"
 				Grid.Row="0"
 				
@@ -266,24 +164,141 @@
 				  ToolTip="Sounds"
 				  
 				  Content="&#xE994;"
+				  Click="ToggleSoundCommand"
 				  />
 
 			<Button x:Name="AlwaysOnTopToggle"
-				 Style="{StaticResource SubtleMiniButtonStyle}"
-				 ToolTip="Always on top"
-				 Content="&#xE718;" />
+				  Style="{StaticResource SubtleMiniButtonStyle}"
+				  ToolTip="Always on top"
+				  
+				  Content="&#xE718;"
+				  Click="ToggleAlwaysOnTopCommand"
+				  />
 
 			<Button x:Name="HelpButton"
-				 Style="{StaticResource SubtleMiniButtonStyle}"
-				 ToolTip="Help"
-				 Content="&#xE897;" />
+				  Style="{StaticResource SubtleMiniButtonStyle}"
+				  ToolTip="Help"
+				  
+				  Content="&#xE897;"
+				  Click="ToggleHelpPanelCommand"
+				  />
 
 			<Button Name="AboutButton"
-				 Style="{StaticResource SubtleMiniButtonStyle}"
-				 ToolTip="About..."
-				 Content="&#xE946;" />
+				  Style="{StaticResource SubtleMiniButtonStyle}"
+				  ToolTip="About..."
+				  
+				  Content="&#xE946;"
+				  Click="OpenAboutWindowCommand"
+				  />
 
 		</StackPanel>
+
+		<Image Name="MainImageView" 
+			 Grid.Row="1"
+			 Stretch="Uniform"
+			 RenderOptions.BitmapScalingMode="HighQuality"
+			 />
+
+		<Label Name="VersionNumberOverlayLabel"
+			 Grid.Row="1"
+			 Foreground="{DynamicResource VersionNumberOverlayColor}"
+			 HorizontalAlignment="Right"
+			 VerticalAlignment="Top">v 0.5.0</Label>
+
+		<StackPanel Name="HelpOverlayPanel"
+				
+				Visibility="Collapsed"
+				
+				Grid.Row="1"
+				HorizontalAlignment="Stretch"
+				VerticalAlignment="Center"
+				Background="#B2000000"
+				Orientation="Vertical"
+				Height="Auto" Width="Auto"
+				
+				TextElement.Foreground="White"
+				TextBlock.Foreground="White"
+				>
+
+			<StackPanel Orientation="Vertical" Margin="100,50,100,120" HorizontalAlignment="Center">
+				<StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+					<Label HorizontalAlignment="Center" FontSize="36" FontWeight="Bold" Foreground="White" FontFamily="{DynamicResource ButtonSymbolFont}" VerticalAlignment="Center" Margin="0,0,0,-10">&#xE765;</Label>
+					<Label HorizontalAlignment="Center" FontSize="24" FontWeight="Bold" Foreground="White">Keyboard Shortcuts</Label>
+				</StackPanel>
+
+				<Border CornerRadius="10,10,10,10" Background="#7F000000" Margin="0,5,0,20" >
+					<Grid TextBlock.FontSize="16" Margin="20, 30, 20 30" Width="500">
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="*"/>
+							<ColumnDefinition Width="*"/>
+						</Grid.ColumnDefinitions>
+
+						<StackPanel Grid.Column="0" Orientation="Vertical" Margin="0,0,20,0">
+							<Grid Margin="0,0,0,5">
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="*"/>
+									<ColumnDefinition Width="*"/>
+								</Grid.ColumnDefinitions>
+
+								<TextBlock Grid.Column="0" Text="Open folder..." />
+								<StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+									<components:KeyTextBlock Text="Ctrl" />
+									<TextBlock Text="+" />
+									<components:KeyTextBlock Text="O" />
+								</StackPanel>
+							</Grid>
+
+							<TextBlock />
+							<components:HotkeyListItem
+								CommandName="Next image"
+								Key="J"
+								/>
+
+							<components:HotkeyListItem
+								CommandName="Previous image"
+								Key="K"
+								/>
+							<TextBlock />
+							<components:HotkeyListItem
+								CommandName="Play/Pause"
+								Key="P"
+								/>
+							<components:HotkeyListItem
+								CommandName="Restart timer"
+								Key="R"
+								/>
+						</StackPanel>
+						<StackPanel Grid.Column="1" Orientation="Vertical">
+							<components:HotkeyListItem
+								CommandName="Toggle bottom bar"
+								Key="H"
+								/>
+
+							<components:HotkeyListItem
+								CommandName="Toggle help"
+								Key="F1"
+								/>
+						</StackPanel>
+					</Grid>
+
+
+
+				</Border>
+
+				<TextBlock 
+					HorizontalAlignment="Center"
+					FontSize="18"
+					Foreground="White" 
+					TextAlignment="Center"
+					TextWrapping="Wrap" VerticalAlignment="Center"
+					>
+					
+					<Run FontFamily="{DynamicResource ButtonSymbolFont}" FontSize="20">&#xE8DA;</Run> <Run>You can also add images to a set using drag and drop.</Run>
+				</TextBlock>
+			</StackPanel>
+
+		</StackPanel>
+
 
 		<StackPanel x:Name="BottomBarContainer"
 				Grid.Row="2"
@@ -304,7 +319,9 @@
 						 Margin="5,2,5,3"
 						 MinWidth="300"
 						 Height="4"
-						Foreground="{DynamicResource TimerActiveColor}"
+						 Foreground="{DynamicResource TimerActiveColor}"
+						 
+						 Maximum="{StaticResource TimeBarMaximum}"
 						 />
 				<Label
 					x:Name="ExpandBottomBarMiniButton"
@@ -328,11 +345,19 @@
 					TextBlock.FontSize="{DynamicResource TimerButtonFontSize}"
 					>
 
-				<Image Width="50" Height="50" Source="/img/UrgryAnesthesia.png" Margin="0,0,20,0" />
+				<Image x:Name="Oppression" 
+					 
+					 Width="50"
+					 Height="50"
+					 Source="/img/UrgryAnesthesia.png"
+					 Margin="0,0,20,0" />
 
-				<StackPanel Orientation="Horizontal"
+				<StackPanel x:Name="ImagesAndTimeInfo"
+						Orientation="Horizontal"
 						TextBlock.FontFamily="Segoe UI"
-						TextBlock.FontSize="12" HorizontalAlignment="Right" VerticalAlignment="Center">
+						TextBlock.FontSize="12"
+						HorizontalAlignment="Right"
+						VerticalAlignment="Center">
 					<Label Name="ImagesCountLabel" Foreground="{DynamicResource ImageCountLabelColor}" HorizontalAlignment="Right" Content="0 images"/>
 					<Label Foreground="{DynamicResource ImageCountLabelColor}" HorizontalAlignment="Right" Content=":"/>
 					<Label Name="NonEditableTimerLabel" Foreground="{DynamicResource ImageCountLabelColor}" HorizontalAlignment="Right" />
@@ -365,15 +390,19 @@
 
 					  />
 
-				<Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Background="{DynamicResource MainControlsSeparator.Background}" Height="{DynamicResource ControlSeparatorHeight}" />
-				<StackPanel Orientation="Vertical" Height="Auto">
+				<StackPanel x:Name="CirculatorControls"
+					Orientation="Vertical" Height="Auto">
 					<ProgressBar Name="TimeBar"
 							 Value="50" 
 							 Margin="5,2,5,0"
 							 Foreground="{DynamicResource TimerActiveColor}"
+							 
+							 Maximum="{StaticResource TimeBarMaximum}"
 							 />
 
 					<StackPanel Orientation="Horizontal" Height="{DynamicResource timerButtonsHeight}">
+
+						<Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Background="{DynamicResource MainControlsSeparator.Background}" Height="{DynamicResource ControlSeparatorHeight}" />
 						<Button Name="RestartTimerButton"
 							  
 							  Style="{DynamicResource MainControlButtonStyle}" 
@@ -416,10 +445,11 @@
 							  
 							  Click="NextImageCommand"							  
 							  />
+
+						<Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Background="{DynamicResource MainControlsSeparator.Background}" Height="{DynamicResource ControlSeparatorHeight}" />
 					</StackPanel>
 				</StackPanel>
-				<Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Background="{DynamicResource MainControlsSeparator.Background}" Height="{DynamicResource ControlSeparatorHeight}" />
-
+				
 				<Button Name="OpenFolderButton"
 					  
 					  Style="{DynamicResource MainControlButtonStyle}"
@@ -431,7 +461,7 @@
 					  Click="OpenFolderCommand"
 					  >
 					<Button.ToolTip>
-						<ToolTip>Open Images... (Ctrl + O)</ToolTip>
+						<ToolTip>Open Folder... (Ctrl + O)</ToolTip>
 					</Button.ToolTip>
 
 				</Button>

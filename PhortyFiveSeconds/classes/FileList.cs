@@ -33,7 +33,7 @@ internal class FileList
 
 	public int Append (IEnumerable<string> filePaths)
 	{
-		int filesAppended = 0;
+		int filesAppendedCount = 0;
 		foreach (var filePath in filePaths)
 		{
 			
@@ -42,9 +42,9 @@ internal class FileList
 				fileName = Path.GetFileName(filePath),
 				filePath = filePath,
 			});
-			filesAppended++;
+			filesAppendedCount++;
 		}
 
-		return filesAppended;
+		return filesAppendedCount;
 	}
 }
