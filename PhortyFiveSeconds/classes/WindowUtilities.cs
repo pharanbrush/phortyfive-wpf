@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Input;
 
 namespace PhortyFiveSeconds;
 
@@ -78,5 +79,18 @@ static public class WindowUtilities
 			if (string.IsNullOrEmpty(text)) return;
 			Clipboard.SetText(text);
 		}
+	}
+
+	public static void RouteMouseover (Button source, Button destination)
+	{
+		source.MouseEnter += (_, _) => {
+			var routedArgs = new MouseEventArgs(Mouse.PrimaryDevice, 0) { RoutedEvent = Mouse.MouseEnterEvent, };
+			destination.RaiseEvent(routedArgs);
+		};
+
+		source.MouseLeave += (_, _) => {
+			var routedArgs = new MouseEventArgs(Mouse.PrimaryDevice, 0) { RoutedEvent = Mouse.MouseLeaveEvent, };
+			destination.RaiseEvent(routedArgs);
+		};
 	}
 }
