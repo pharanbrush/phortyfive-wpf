@@ -181,7 +181,10 @@ public partial class MainWindow : Window
 
 	void TryRestartTimer ()
 	{
-		DoIfImageSetIsLoaded(() => Timer.Restart());
+		DoIfImageSetIsLoaded(() => {
+			Timer.Restart();
+			PlaySound();
+		});
 	}
 
 	void TryMoveNext ()
