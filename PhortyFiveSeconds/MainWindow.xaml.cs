@@ -93,9 +93,11 @@ public partial class MainWindow : Window
 		ImageView = new(MainImageView, ImageFileNameLabel);
 		ImageView.HandleClipboardToast(Toaster.Toast);
 
-		Oppression.MouseDown += (_, _) => ToggleBottomBarOrder();
 		HideBottomBarMiniButton.MouseDown += (_, _) => SetBottomBarActive(false);
 		HelpOverlayPanel.MouseDown += (_, _) => SetHelpPanelActive(false);
+
+		Oppression.MouseLeftButtonDown += (_, _) => ToggleBottomBarOrder();
+		Oppression.MouseRightButtonDown += (_, _) => Oppression.SetPanelActive(false);
 
 		InitializeSoundBindings();
 		InitializeTooltipSettings();
