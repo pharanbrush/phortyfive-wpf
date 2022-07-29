@@ -28,7 +28,6 @@
 		<RoutedUICommand x:Key="ToggleBottomBarCommand" Text="Toggle Bottom Bar" />
 
 		<RoutedUICommand x:Key="ToggleHelpPanel" Text="Toggle Help Panel" />
-
 	</Window.Resources>
 
 	<Window.CommandBindings>
@@ -199,6 +198,42 @@
 			 RenderOptions.BitmapScalingMode="HighQuality"
 			 />
 
+		<Grid x:Name="OverClickControls"
+				Grid.Row="1"
+				
+			>
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="100"/>
+				<ColumnDefinition Width="*"/>
+				<ColumnDefinition Width="150"/>
+			</Grid.ColumnDefinitions>
+
+			<Button x:Name="GestureButtonLeft"
+				  Grid.Column="0"
+				  Style="{DynamicResource GestureAreaButton}"
+				  
+				  Content="&#xE76B;"
+				  Click="GestureButtonLeft_Click"
+				  />
+
+			<Button x:Name="GestureButtonCenter"
+				  Grid.Column="1"
+				  Style="{DynamicResource GestureAreaButton}"
+				  
+				  Content="&#xE768;"
+				  Click="GestureButtonCenter_Click"
+				  />
+
+			<Button x:Name="GestureButtonRight"
+				  Grid.Column="2"
+				  Style="{DynamicResource GestureAreaButton}"
+				  
+				  Content="&#xE76C;"
+				  Click="GestureButtonRight_Click"
+				  />
+		</Grid>
+		
+
 		<Label Name="VersionNumberOverlayLabel"
 			 Grid.Row="1"
 			 Foreground="{DynamicResource VersionNumberOverlayColor}"
@@ -295,6 +330,7 @@
 					
 					<Run FontFamily="{DynamicResource ButtonSymbolFont}" FontSize="20">&#xE8DA;</Run> <Run>You can also add images to a set using drag and drop.</Run>
 				</TextBlock>
+
 			</StackPanel>
 
 		</StackPanel>

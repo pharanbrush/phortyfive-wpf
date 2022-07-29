@@ -46,7 +46,7 @@
 		<SolidColorBrush x:Key="Button.Focus.Border" Color="#CCC4E5F6"/>
 		<SolidColorBrush x:Key="Button.Active.Foreground" Color="#B2BEE6FD"/>
 		<SolidColorBrush x:Key="Button.Paused.Foreground" Color="#B2FDEFBE"/>
-		
+
 		<SolidColorBrush x:Key="SubtleMiniButton.Foreground" Color="#4C373737"/>
 		<SolidColorBrush x:Key="MainControlsSeparator.Background" Color="#335A5A5A"/>
 
@@ -81,6 +81,50 @@
 								<Setter Property="Background" TargetName="border" Value="{StaticResource Button.Disabled.Background}"/>
 								<Setter Property="BorderBrush" TargetName="border" Value="{StaticResource Button.Disabled.Border}"/>
 								<Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="{StaticResource Button.Disabled.Foreground}"/>
+							</Trigger>
+						</ControlTemplate.Triggers>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+
+		<SolidColorBrush x:Key="GestureAreaButton.Static.Border" Color="#FF707070"/>
+		<SolidColorBrush x:Key="GestureAreaButton.MouseOver.Background" Color="#22FFFFFF"/>
+		<SolidColorBrush x:Key="GestureAreaButton.MouseOver.Foreground" Color="#EE111111"/>
+		<SolidColorBrush x:Key="GestureAreaButton.MouseOver.Border" Color="Transparent"/>
+		<SolidColorBrush x:Key="GestureAreaButton.Pressed.Background" Color="#55BEE6FD"/>
+		<SolidColorBrush x:Key="GestureAreaButton.Pressed.Border" Color="Transparent"/>
+		<SolidColorBrush x:Key="GestureAreaButton.Pressed.Foreground" Color="CornflowerBlue"/>
+		<SolidColorBrush x:Key="GestureAreaButton.Disabled.Background" Color="Transparent"/>
+		<SolidColorBrush x:Key="GestureAreaButton.Disabled.Border" Color="Transparent"/>
+		<SolidColorBrush x:Key="GestureAreaButton.Disabled.Foreground" Color="Transparent"/>
+
+		<Style x:Key="GestureAreaButton" TargetType="{x:Type Button}">
+			<Setter Property="Background" Value="Transparent"/>
+			<Setter Property="BorderBrush" Value="{StaticResource GestureAreaButton.Static.Border}"/>
+			<Setter Property="Foreground" Value="Transparent"/>
+			<Setter Property="BorderThickness" Value="0"/>
+			<Setter Property="Focusable" Value="False" />
+			<Setter Property="HorizontalContentAlignment" Value="Center"/>
+			<Setter Property="VerticalContentAlignment" Value="Center"/>
+			<Setter Property="Padding" Value="1"/>
+			<Setter Property="FontFamily" Value="Segoe MDL2 Assets" />
+			<Setter Property="FontSize" Value="50" />
+			<Setter Property="FontWeight" Value="Bold" />
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="{x:Type Button}">
+						<Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="true">
+							<ContentPresenter x:Name="contentPresenter" Focusable="False" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+						</Border>
+						<ControlTemplate.Triggers>
+							<Trigger Property="IsMouseOver" Value="true">
+								<Setter Property="Background" TargetName="border" Value="{StaticResource GestureAreaButton.MouseOver.Background}"/>
+								<Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="{StaticResource GestureAreaButton.MouseOver.Foreground}"/>
+							</Trigger>
+							<Trigger Property="IsPressed" Value="true">
+								<Setter Property="Background" TargetName="border" Value="{StaticResource GestureAreaButton.Pressed.Background}"/>
+								<Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="{StaticResource GestureAreaButton.Pressed.Foreground}"/>
 							</Trigger>
 						</ControlTemplate.Triggers>
 					</ControlTemplate>
@@ -126,11 +170,11 @@
 				</Setter.Value>
 			</Setter>
 		</Style>
-		
+
 		<ControlTemplate x:Key="MainControlsSeparatorStyle" TargetType="{x:Type Separator}">
 			<Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Height="1" SnapsToDevicePixels="true"/>
 		</ControlTemplate>
-		
+
 	</Application.Resources>
 
 </Application>

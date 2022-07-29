@@ -15,6 +15,8 @@ internal class WPFImageView
 
 	Action<string>? toastHandler;
 
+	bool HasImage { get; set; } = false;
+
 	string LabelText
 	{
 		get => FileNameLabel.Content is TextBlock textBlock ? textBlock.Text : string.Empty;
@@ -45,6 +47,8 @@ internal class WPFImageView
 		WindowUtilities.MakeTooltipImmediate(FileNameLabel);
 		WindowUtilities.AllowRightClickCopy(FileNameLabel, "Copy filename");
 		FileNameLabel.MouseDoubleClick += (_, _) => CopyFilenameToClipboard();
+
+
 	}
 	public void HandleClipboardToast (Action<string> toastHandler)
 	{
@@ -65,6 +69,7 @@ internal class WPFImageView
 			ImageElement.Source = new BitmapImage(new Uri(filePath));
 			ImageElement.Visibility = Visibility.Visible;
 			LabelText = Path.GetFileName(filePath);
+			HasImage = true;
 		});
 	}
 

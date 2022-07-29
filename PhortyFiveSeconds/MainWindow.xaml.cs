@@ -53,6 +53,8 @@ public partial class MainWindow : Window
 		InitializeComponent();
 		VersionNumberOverlayLabel.Content = App.AssemblyVersionNumber;
 
+		OverClickControls.Visibility = Visibility.Hidden;
+
 		Timer.PlayPauseChanged += UpdatePlayPauseButtonState;
 		Timer.PlayPauseChanged += UpdateTimerPlayPausedIndicator;
 		Timer.Restarted += UpdateTimerIndicatorTick;
@@ -108,7 +110,6 @@ public partial class MainWindow : Window
 		Circulator.OnCurrentNumberChanged += PlaySound;
 		Timer.PlayPauseChanged += PlaySound;
 		Timer.DurationChanged += PlaySound;
-		Timer.Restarted += PlaySound;
 		SetSoundActive(true);
 	}
 
@@ -123,7 +124,7 @@ public partial class MainWindow : Window
 	void OpenFolderCommand (object sender, RoutedEventArgs e) => UserOpenFolder();
 	void RestartTimerCommand (object sender, RoutedEventArgs e) => TryRestartTimer();
 	void PreviousImageCommand (object sender, RoutedEventArgs e) => TryMovePrevious();
-	void PlayPauseCommand (object sender, RoutedEventArgs e) => DoIfImageSetIsLoaded(Timer.TogglePlayPause);
+	void PlayPauseCommand (object sender, RoutedEventArgs e) => TryTogglePlayPause();
 	void NextImageCommand (object sender, RoutedEventArgs e) => TryMoveNext();
 	void ToggleSoundCommand (object sender, RoutedEventArgs e) => TryToggleSound();
 	void ToggleAlwaysOnTopCommand (object sender, RoutedEventArgs e) => TryToggleAlwaysOnTop();
@@ -134,6 +135,10 @@ public partial class MainWindow : Window
 	void ExpandBottomBarButton_MouseDown (object sender, MouseButtonEventArgs e) => SetBottomBarActive(true);
 	void DropTarget_DragEnter (object sender, DragEventArgs e) => SetDropHintOverlayActive(true);
 	void DropTarget_DragLeave (object sender, DragEventArgs e) => SetDropHintOverlayActive(false);
+
+	private void GestureButtonLeft_Click (object sender, RoutedEventArgs e) => TryMovePrevious();
+	private void GestureButtonCenter_Click (object sender, RoutedEventArgs e) => TryTogglePlayPause();
+	private void GestureButtonRight_Click (object sender, RoutedEventArgs e) => TryMoveNext();
 
 	void TryToggleSound () => SetSoundActive(!IsSoundEnabled);
 	void TryToggleBottomBar () => SetBottomBarActive(CollapsedBottomBar.Visibility == Visibility.Visible);
@@ -167,6 +172,11 @@ public partial class MainWindow : Window
 		Timer.SetDuration(TimeSpan.FromSeconds(durationSeconds));
 		Timer.Restart();
 		EditableTimerPanelUI.SetActive(false);
+	}
+
+	void TryTogglePlayPause ()
+	{
+		DoIfImageSetIsLoaded(Timer.TogglePlayPause);
 	}
 
 	void TryRestartTimer ()
@@ -330,11 +340,14 @@ public partial class MainWindow : Window
 
 		PlayPauseButton.Background = backgroundBrush;
 		PlayPauseButton.Content = label;
+
+		GestureButtonCenter.Content = label;
 	}
 
 	void UpdateInteractibleState ()
 	{
 		CirculatorControls.IsEnabled = IsImageSetReady;
+		OverClickControls.Visibility = IsImageSetReady ? Visibility.Visible : Visibility.Hidden;
 		SetDropHintOverlayActive(false);
 	}
 
@@ -392,5 +405,6 @@ public partial class MainWindow : Window
 			}
 		}
 	}
+
 
 }

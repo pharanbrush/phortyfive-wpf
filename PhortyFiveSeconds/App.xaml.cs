@@ -9,9 +9,6 @@ using System.Windows.Media;
 
 namespace PhortyFiveSeconds
 {
-
-	
-
 	public partial class App : Application
 	{
 		public static Brush? GetBrush (string key) => Current.Resources[key] as Brush;
