@@ -198,6 +198,15 @@
 			 RenderOptions.BitmapScalingMode="HighQuality"
 			 />
 
+		<Label Name="ImageErrorLabel"
+			 Grid.Row="1"
+			 
+			 Visibility="Collapsed"
+			 
+			 HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20"
+			 Content="Image could not be loaded." 
+			 />
+
 		<Grid x:Name="OverClickControls"
 				Grid.Row="1"
 				
@@ -473,7 +482,6 @@
 							  
 							  Style="{DynamicResource MainControlButtonStyle}"
 							  Content="&#xE76C;"
-							  Margin="5"
 							  Width="{DynamicResource buttonWidth}"
 							  ToolTip="Next Image (J)"
 							  
@@ -483,7 +491,7 @@
 						<Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Background="{DynamicResource MainControlsSeparator.Background}" Height="{DynamicResource ControlSeparatorHeight}" />
 					</StackPanel>
 				</StackPanel>
-				
+
 				<Button Name="OpenFolderButton"
 					  
 					  Style="{DynamicResource MainControlButtonStyle}"

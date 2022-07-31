@@ -90,7 +90,7 @@ public partial class MainWindow : Window
 		Circulator.OnCurrentNumberChanged += UpdateCurrentImage;
 
 		Toaster = new(ToastLabel);
-		ImageView = new(MainImageView, ImageFileNameLabel);
+		ImageView = new(MainImageView, ImageFileNameLabel, ImageErrorLabel);
 		ImageView.HandleClipboardToast(Toaster.Toast);
 
 		HideBottomBarMiniButton.MouseDown += (_, _) => SetBottomBarActive(false);
