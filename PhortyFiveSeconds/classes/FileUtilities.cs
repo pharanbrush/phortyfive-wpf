@@ -42,28 +42,25 @@ static internal class FileUtilities
 		return userPressedOk;
 	}
 
-	public static IEnumerable<string> EnumerateImages (IEnumerable<string> filePaths)
-	{
-		foreach (var file in filePaths)
-		{
-			if (IsImage(file))
-			{
-				yield return file;
-			}
-		}
-	}
-
 	public static bool OpenPickerForImageFolder (out IEnumerable<string> outputFileNames)
 	{
-		using var dialog = new FolderBrowserDialog();
+		using var dialog = new FolderBrowserDialog()
+		{
+			Description = "Select a folder of images",
+			UseDescriptionForTitle = true,
+		};
+
 		var result = dialog.ShowDialog();
 		bool userPressedOk = result is DialogResult.OK;
-		outputFileNames = null;
 
 		if (userPressedOk)
 		{
 			string folderPath = dialog.SelectedPath;
-			outputFileNames = FileUtilities.EnumerateImagesFromFolder(folderPath);
+			outputFileNames = EnumerateImagesFromFolder(folderPath);
+		}
+		else
+		{
+			outputFileNames = Array.Empty<string>();
 		}
 
 		return userPressedOk;
@@ -73,6 +70,14 @@ static internal class FileUtilities
 	{
 		var files = Directory.GetFiles(folderPath);
 		return EnumerateImages(files);
+	}
+
+	public static IEnumerable<string> EnumerateImages (IEnumerable<string> filePaths)
+	{
+		foreach (var file in filePaths)
+		{
+			if (IsImage(file)) yield return file;
+		}
 	}
 
 	internal static bool IsImage (string fileName)
@@ -88,7 +93,5 @@ static internal class FileUtilities
 
 		return false;
 	}
-
-
 
 }
