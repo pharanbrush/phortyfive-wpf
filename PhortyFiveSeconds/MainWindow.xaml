@@ -384,8 +384,8 @@
 
 				<Image x:Name="Oppression" 
 					 
-					 Width="50"
-					 Height="50"
+					 Width="46"
+					 Height="46"
 					 Source="/img/UrgryAnesthesia.png"
 					 Margin="0,0,20,0" />
 
@@ -444,7 +444,6 @@
 							  
 							  Style="{DynamicResource MainControlButtonStyle}" 
 							  Content="&#xE777;"
-							  Margin="5"
 							  Width="{DynamicResource buttonWidth}"
 							  ToolTip="Restart Timer (R)"
 							  
@@ -454,8 +453,7 @@
 						<Button Name="PrevButton"
 							  
 							  Style="{DynamicResource MainControlButtonStyle}"
-							  Content="&#xE76B;"
-							  Margin="5"
+							  Content="&#xE76B;"						  
 							  Width="{DynamicResource buttonWidth}"
 							  ToolTip="Previous Image (K)"
 							  
@@ -465,8 +463,7 @@
 						<Button Name="PlayPauseButton"
 							  
 							  Style="{DynamicResource MainControlButtonStyle}"
-							  Content="&#xE768;"
-							  Margin="5"
+							  Content="&#xE768;"							  
 							  Width="{DynamicResource buttonWidth}"
 							  ToolTip="Play/Pause (P)"
 							  
@@ -494,14 +491,10 @@
 					  Width="{StaticResource buttonBigWidth}"
 					  
 					  Content="&#xED25;"
-					  					  
+					  ToolTip="Open Folder... (Ctrl + O)"
+					  
 					  Click="OpenFolderCommand"
-					  >
-					<Button.ToolTip>
-						<ToolTip>Open Folder... (Ctrl + O)</ToolTip>
-					</Button.ToolTip>
-
-				</Button>
+					   />
 
 				<Label Name="HideBottomBarMiniButton"
 					 Foreground="{DynamicResource CollapseMinibuttonColor}"
